@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
+import './Ownable.sol';
 
 
 contract EarlyBird is Ownable {
@@ -85,10 +85,6 @@ contract EarlyBird is Ownable {
 
     function lockEarlyBird() public onlyOwner {
         isLocked = true;
-    }
-
-    function () {
-        throw;
     }
 
 }

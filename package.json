@@ -1,4 +1,10 @@
 {
+  "version": "0.0.1",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.0.0",
+    "npm": ">=5.0.0"
+  },
   "scripts": {
     "compile": "truffle compile",
     "geth": "geth --testnet --rpc --rpcport 8546 console 2>> geth-test.log",
@@ -7,8 +13,5 @@
     "deploy-live": "truffle migrate --network live --reset",
     "test": "sh scripts/test.sh",
     "lint": "solium --dir ."
-  },
-  "dependencies": {
-    "zeppelin-solidity": "^1.0.7"
   }
 }
