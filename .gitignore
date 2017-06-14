@@ -1,0 +1,4 @@
+node_modules
+geth.log
+geth-test.log
+.DS_Store

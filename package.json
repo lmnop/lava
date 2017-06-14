@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "geth": "geth --testnet --rpc --rpcport 8546 console 2>> geth-test.log",
+    "geth-live": "geth --rpc --rpcport 8547 console 2>> geth.log",
+    "build": "truffle compile && truffle migrate --network test --reset",
+    "build-live": "truffle compile && truffle migrate --network live --reset",
+    "test": "sh scripts/test.sh"
+  },
+  "dependencies": {
+    "zeppelin-solidity": "^1.0.7"
+  }
+}
