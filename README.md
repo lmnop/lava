@@ -9,6 +9,7 @@ Contract to capture people's intent to participate in a future contract like a t
 - [yarn](https://yarnpkg.com/)
 - [truffle](http://truffleframework.com/)
 - [geth](https://github.com/ethereum/go-ethereum)
+- [solium] (https://github.com/duaraghav8/solium)
 
 ## Install
 
@@ -21,6 +22,13 @@ $ yarn install
 
 ```
 $ yarn test
+```
+
+
+## Lint
+
+```
+$ yarn lint
 ```
 
 

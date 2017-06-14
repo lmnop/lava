@@ -1,23 +1,19 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.11;
 
-contract Migrations {
-  address public owner;
-  uint public last_completed_migration;
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-  modifier restricted() {
-    if (msg.sender == owner) _;
-  }
 
-  function Migrations() {
-    owner = msg.sender;
-  }
+contract Migrations is Ownable {
 
-  function setCompleted(uint completed) restricted {
-    last_completed_migration = completed;
-  }
+    uint public lastCompletedMigration;
 
-  function upgrade(address new_address) restricted {
-    Migrations upgraded = Migrations(new_address);
-    upgraded.setCompleted(last_completed_migration);
-  }
+    function setCompleted(uint completed) onlyOwner {
+        lastCompletedMigration = completed;
+    }
+
+    function upgrade(address newAddress) onlyOwner {
+        Migrations upgraded = Migrations(newAddress);
+        upgraded.setCompleted(lastCompletedMigration);
+    }
+
 }
