@@ -79,7 +79,7 @@ contract EarlyBird is Ownable {
         if (!msg.sender.send(refund)) {
             stakers[msg.sender].amount += refund;
         } else {
-            StakertakeRefunded(msg.sender);
+            StakeRefunded(msg.sender);
         }
     }
 
