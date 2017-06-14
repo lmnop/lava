@@ -11,6 +11,7 @@ Contract to capture people's intent to participate in a future contract like a t
 - [geth](https://github.com/ethereum/go-ethereum)
 - [solium](https://github.com/duaraghav8/solium)
 
+
 ## Install
 
 ```
@@ -32,11 +33,18 @@ $ yarn lint
 ```
 
 
+## Compile
+
+```
+$ yarn compile
+```
+
+
 ## Deploy on Testnet
 
 ```
 $ yarn geth
-$ yarn build
+$ yarn deploy
 ```
 
 
@@ -44,5 +52,5 @@ $ yarn build
 
 ```
 $ yarn geth-live
-$ yarn build-live
+$ yarn deploy-live
 ```
