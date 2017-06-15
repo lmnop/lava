@@ -5,7 +5,8 @@ import './Ownable.sol';
 
 contract EarlyBird is Ownable {
 
-    uint public stakeAmount;
+    uint constant public STAKE_AMOUNT = 1000000000000000;
+
     bool public isLocked;
 
     struct Staker {
@@ -20,8 +21,7 @@ contract EarlyBird is Ownable {
     event StakeCompleted(address staker, uint blockNumber);
     event StakeRefunded(address staker);
 
-    function EarlyBird(int amount) {
-        stakeAmount = uint(amount);
+    function EarlyBird() {
         isLocked = false;
     }
 
@@ -42,7 +42,7 @@ contract EarlyBird is Ownable {
             throw;
         }
 
-        if (msg.value != stakeAmount) {
+        if (msg.value != STAKE_AMOUNT) {
             throw;
         }
 

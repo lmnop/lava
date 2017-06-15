@@ -18,7 +18,7 @@ contract('EarlyBird', (accounts) => {
     it('parameters are correct', async () => {
       const owner = await contract.owner();
       const isLocked = await contract.isLocked();
-      const stakeAmount = await contract.stakeAmount();
+      const stakeAmount = await contract.STAKE_AMOUNT();
 
       assert.equal(owner, accounts[0]);
       assert.equal(isLocked, false);

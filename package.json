@@ -9,11 +9,15 @@
   "main": "index.js",
   "scripts": {
     "compile": "truffle compile",
-    "geth": "geth --testnet --rpc --rpcport 8546 console 2>> geth-test.log",
-    "geth-live": "geth --rpc --rpcport 8547 console 2>> geth.log",
-    "deploy": "truffle migrate --network test --reset",
-    "deploy-live": "truffle migrate --network live --reset",
+    "deploy-rinkeby": "truffle migrate --network rinkeby --reset",
+    "deploy-test": "truffle migrate --network test --reset",
+    "deploy": "truffle migrate --network live --reset",
+    "geth-test": "geth --testnet --rpc --rpcport 8546 console 2>> geth-test.log",
+    "geth": "geth --rpc --rpcport 8547 console 2>> geth.log",
     "test": "sh scripts/test.sh",
     "lint": "solium --dir ."
+  },
+  "dependencies": {
+    "truffle-hdwallet-provider": "^0.0.3"
   }
 }

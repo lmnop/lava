@@ -8,44 +8,60 @@ This is a singleton contract - deployed once and interacted with by multiple peo
 
 - [node v8.0.0+](https://nodejs.org/)
 - [npm v5.0.0+](https://www.npmjs.com/)
+- [yarn](https://yarnpkg.com/)
 - [truffle](http://truffleframework.com/)
 - [geth](https://github.com/ethereum/go-ethereum)
 - [solium](https://github.com/duaraghav8/solium)
 
+
+## Install
+
+```
+$ yarn install
+```
+
+
 ## Test
 
 ```
-$ npm run test
+$ yarn test
 ```
 
 
 ## Lint
 
 ```
-$ npm run lint
+$ yarn lint
 ```
 
 
 ## Compile
 
 ```
-$ npm run compile
+$ yarn compile
 ```
 
 
-## Deploy on Testnet
+## Deploy on Ropsten Testnet
 
 ```
-$ npm run geth
-$ npm run deploy
+$ yarn deploy-ropsten
+```
+
+
+## Deploy on Local Testnet
+
+```
+$ yarn geth-test
+$ yarn deploy-test
 ```
 
 
 ## Deploy on Mainnet
 
 ```
-$ npm run geth-live
-$ npm run deploy-live
+$ yarn geth
+$ yarn deploy
 ```
 
 

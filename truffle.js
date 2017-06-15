@@ -1,3 +1,10 @@
+const HDWalletProvider = require('truffle-hdwallet-provider');
+const config = require('./config');
+
+const provider = new HDWalletProvider(config.mnemonic, 'https://rinkeby.infura.io/');
+
+console.log('Owner Address:', provider.address);
+
 module.exports = {
   networks: {
     development: {
@@ -9,13 +16,16 @@ module.exports = {
       host: 'localhost',
       port: 8546,
       network_id: "*",
-      from: process.env.TEST_ADDRESS,
+    },
+    rinkeby: {
+      provider,
+      network_id: 4,
     },
     live: {
       host: 'localhost',
       port: 8547,
       network_id: 1,
-      from: process.env.LIVE_ADDRESS,
+      from: config.address,
     },
   }
 };
