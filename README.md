@@ -2,6 +2,8 @@
 
 Contract to capture people's intent to participate in a future contract like a token sale.
 
+This is a singleton contract - deployed once and interacted with by multiple people.
+
 ## Requirements
 
 - [node v8.0.0+](https://nodejs.org/)
@@ -44,4 +46,13 @@ $ npm run deploy
 ```
 $ npm run geth-live
 $ npm run deploy-live
+```
+
+
+## Import Contract JSON Blob into External dApps
+
+This constact can be imported into dApps
+
+```
+$ yarn add git+https://git@github.com/lmnop/early-bird-contract.git
 ```
