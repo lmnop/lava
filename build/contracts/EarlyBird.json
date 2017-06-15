@@ -237,8 +237,44 @@
       "links": {},
       "address": "0x3899e83298d20d6309faae24d3afcd970dfbada6",
       "updated_at": 1497516145676
+    },
+    "1497522856246": {
+      "events": {
+        "0x1db000f103b8324c7cd49fa51320c82dca922c81eed3d0e1b0010f94fbdd9fc3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "staker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "blockNumber",
+              "type": "uint256"
+            }
+          ],
+          "name": "StakeCompleted",
+          "type": "event"
+        },
+        "0xde939f2b957cf1cae4a80affd145a63c2b2d7b08b7e9e755b20557b8fc5e703f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "staker",
+              "type": "address"
+            }
+          ],
+          "name": "StakeRefunded",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xeb3149257b25f08580eba0a8b4c088334675f6de",
+      "updated_at": 1497523013083
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1497516145676
+  "updated_at": 1497523013083
 }
