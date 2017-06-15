@@ -51,8 +51,6 @@ $ npm run deploy-live
 
 ## Import Contract JSON Blob into External dApps
 
-This constact can be imported into dApps
-
 ```
 $ yarn add git+https://git@github.com/lmnop/early-bird-contract.git
 ```
