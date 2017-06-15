@@ -14,42 +14,42 @@ This is a singleton contract - deployed once and interacted with by multiple peo
 - [solium](https://github.com/duaraghav8/solium)
 
 
-## Install
+### Install
 
 ```
 $ yarn install
 ```
 
 
-## Test
+### Test
 
 ```
 $ yarn test
 ```
 
 
-## Lint
+### Lint
 
 ```
 $ yarn lint
 ```
 
 
-## Compile
+### Compile
 
 ```
 $ yarn compile
 ```
 
 
-## Deploy on Rinkeby Testnet
+### Deploy on Rinkeby Testnet
 
 ```
 $ yarn deploy-Rinkeby
 ```
 
 
-## Deploy on Local Testnet
+### Deploy on Local Testnet
 
 ```
 $ yarn geth-test
@@ -57,7 +57,7 @@ $ yarn deploy-test
 ```
 
 
-## Deploy on Mainnet
+### Deploy on Mainnet
 
 ```
 $ yarn geth
@@ -65,7 +65,7 @@ $ yarn deploy
 ```
 
 
-## Import Contract JSON Blob into External dApps
+### Import Contract JSON Blob into External dApps
 
 ```
 $ yarn add git+https://git@github.com/lmnop/early-bird-contract.git
