@@ -42,10 +42,10 @@ $ yarn compile
 ```
 
 
-## Deploy on Ropsten Testnet
+## Deploy on Rinkeby Testnet
 
 ```
-$ yarn deploy-ropsten
+$ yarn deploy-Rinkeby
 ```
 
 
