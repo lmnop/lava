@@ -3,7 +3,7 @@ const config = require('./config');
 
 const provider = new HDWalletProvider(config.mnemonic, 'https://rinkeby.infura.io/');
 
-console.log('Owner Address:', provider.address);
+console.log('Rinkeby Address:', provider.address);
 
 module.exports = {
   networks: {
@@ -20,6 +20,7 @@ module.exports = {
     rinkeby: {
       provider,
       network_id: 4,
+      gas: 4612388,
     },
     live: {
       host: 'localhost',
