@@ -5,7 +5,7 @@ import './Ownable.sol';
 
 contract EarlyBird is Ownable {
 
-    uint constant public STAKE_AMOUNT = 1000000000000000;
+    uint constant public STAKE_AMOUNT = 10000000000000000;
 
     bool public isLocked;
 

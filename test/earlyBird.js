@@ -1,7 +1,7 @@
 const EarlyBird = artifacts.require("./EarlyBird.sol");
 
 const fixture = {
-  stakeAmount: 1000000000000000,
+  stakeAmount: 10000000000000000,
 };
 
 contract('EarlyBird', (accounts) => {
@@ -43,7 +43,7 @@ contract('EarlyBird', (accounts) => {
       try {
         await contract.stake({
           from: accounts[0],
-          value: 2000000000000000,
+          value: 20000000000000000,
         });
       } catch (err) {
         assert.ok(err);
