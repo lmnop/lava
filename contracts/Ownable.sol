@@ -10,9 +10,7 @@ contract Ownable {
     }
 
     modifier onlyOwner() {
-        if (msg.sender != owner) {
-            throw;
-        }
+        require(msg.sender == owner);
 
         _;
     }

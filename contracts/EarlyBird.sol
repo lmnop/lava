@@ -38,13 +38,8 @@ contract EarlyBird is Ownable {
     }
 
     function stake() public payable {
-        if (isLocked) {
-            throw;
-        }
-
-        if (msg.value != STAKE_AMOUNT) {
-            throw;
-        }
+        require(!isLocked);
+        require(msg.value == STAKE_AMOUNT);
 
         if (!isStaker(msg.sender)) {
             stakers[msg.sender] = Staker(
@@ -65,13 +60,8 @@ contract EarlyBird is Ownable {
     }
 
     function refundStake() public {
-        if (!isStaker(msg.sender)) {
-            throw;
-        }
-
-        if (stakers[msg.sender].amount == 0) {
-            throw;
-        }
+        require(isStaker(msg.sender));
+        require(stakers[msg.sender].amount <= 0);
 
         uint refund = stakers[msg.sender].amount;
         stakers[msg.sender].amount = 0;
