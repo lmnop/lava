@@ -1,8 +1,10 @@
-# Early Bird Contract
+# LMNOP Contract
 
+### early-bird
 Contract to capture people's intent to participate in a future contract like a token sale.
 
-This is a singleton contract - deployed once and interacted with by multiple people.
+### lava
+Contract to register a SIM and manager your data usage. Data usage is paid for by having ether in the contract.
 
 ## Requirements
 
