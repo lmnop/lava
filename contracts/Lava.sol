@@ -1,70 +1,81 @@
 pragma solidity ^0.4.11;
 
 import './Ownable.sol';
+import './HasUsers.sol';
+import './SafeMath.sol';
 
 
-contract Lava is Ownable {
+contract Lava is Ownable, HasUsers {
+    using SafeMath for uint256;
 
-    uint public minimumBalance;
-    uint public dataCost;
+    uint public minimumBalance;                         // minimum balance to keep SIMs activated
+    uint public dataCost;                               // cost per byte in wei
 
-    struct User {
-        uint index;
-        uint balance;
-        string sim;
-        int dataPaid;
-        int dataConsumed;
-        uint lastCollection;
-    }
+    event LogRegisterSIM(
+        address user,
+        string sim,
+    );
 
-    mapping (address => User) private users;
-    mapping (string => address) private sims;
-    address[] private usersList;
+    event LogDepositMade(
+        address user,
+        uint amount,
+    );
 
-    event ActivateSIM(address user, string sim);
-    event DeactivateSIM(address user, string sim);
-    event DepositMade(address user, string sim, uint amount);
-    event WithdrawMade(address user, string sim, uint amount);
-    event CollectionMade(address user, string sim, uint amount);
+    event LogWithdrawlMade(
+        address user,
+        uint amount,
+    );
+
+    event LogActivateSIM(
+        address user,
+        string sim,
+    );
+
+    event LogDeactivateSIM(
+        address user,
+        string sim,
+    );
+
+    event LogCollectionMade(
+        address user,
+        string sim,
+        uint amount,
+    );
 
     function Lava() {
         minimumBalance = 0.04 ether;
         dataCost = 40000000;
     }
 
-    function isUser(address user) public constant returns (bool) {
-        if (usersList.length == 0) {
-            return false;
-        }
-
-        return usersList[users[user].index] == user;
-    }
-
-    function getUser() public constant returns (uint balance, string sim, int dataPaid, int dataConsumed) {
-        User user = users[msg.sender];
-        return (user.balance, user.sim, user.dataPaid, user.dataConsumed);
-    }
-
     function register(string sim) public payable {
         require(msg.value >= minimumBalance);
-        require(!isUser(msg.sender));
+        require(!isSIM(sim));
 
-        users[msg.sender] = User({
-            index: usersList.push(msg.sender) - 1,
-            balance: msg.value,
-            sim: sim,
+        if (!isUser(msg.sender)) {
+            users[msg.sender] = User({
+                index: userList.push(msg.sender) - 1,
+                balance: msg.value,
+            });
+        }
+
+        sims[sim] = SIM({
+            index: simList.push(sim) - 1,
+            userIndex: users[msg.sender].sims.push(sim) - 1,
+            user: msg.sender,
             dataPaid: 0,
             dataConsumed: 0,
+            isActivated: false,
+            updateStatus: true,
         });
 
-        sims[sim] = msg.sender;
+        users[msg.sender].sims.push(sim);
 
-        ActivateSIM(msg.sender, sim);
+        LogRegisterSIM(msg.sender, sim);
+        LogActivateSIM(msg.sender, sim);
+        LogDepositMade(msg.sender, msg.value);
     }
 
-    function deposit() public payable {
-        require(isUser(msg.sender));
-
+    function deposit() public payable senderMustBeUser {
         uint initialBalance = users[msg.sender].balance;
         uint newBalance = initialBalance + msg.value;
 
@@ -72,65 +83,91 @@ contract Lava is Ownable {
 
         users[msg.sender].balance = newBalance;
 
-        DepositMade(msg.sender, users[msg.sender].sim, msg.value);
+        LogDepositMade(msg.sender, msg.value);
+    }
 
-        if (initialBalance < minimumBalance) {
-            ActivateSIM(msg.sender, users[msg.sender].sim);
+    function withdraw(uint withdrawAmount) public senderMustBeUser {
+        require(withdrawAmount <= users[msg.sender].balance);
+
+        users[msg.sender].balance -= withdrawAmount;
+
+        if (!msg.sender.send(withdrawAmount)) {
+            users[msg.sender].balance += withdrawAmount;
+        } else {
+            LogWithdrawlMade(msg.sender, withdrawAmount);
         }
     }
 
-    function withdraw(uint withdrawAmount) public {
-        require(isUser(msg.sender));
+    function activateSIM(string sim) public senderMustBeUser {
+        require(isUserSIM(msg.sender, sim));
+        require(!sims[sim].updateStatus);
+        require(!sims[sim].isActivated);
+        require(users[msg.sender].balance >= minimumBalance);
 
-        if (users[msg.sender].balance >= withdrawAmount) {
-            users[msg.sender].balance -= withdrawAmount;
+        sims[sim].updateStatus = true;
 
-            if (!msg.sender.send(withdrawAmount)) {
-                users[msg.sender].balance += withdrawAmount;
-            } else {
-                WithdrawMade(msg.sender, users[msg.sender].sim, withdrawAmount);
-            }
-        }
+        LogActivateSIM(msg.sender, sim);
+    }
 
-        if (users[msg.sender].balance < minimumBalance) {
-            DeactivateSIM(msg.sender, users[msg.sender].sim);
-        }
+    function deactivateSIM(string sim) public senderMustBeUser {
+        require(isUserSIM(msg.sender, sim));
+        require(!sims[sim].updateStatus);
+        require(sims[sim].isActivated);
+
+        sims[sim].updateStatus = true;
+
+        LogDeactivateSIM(msg.sender, sim);
     }
 
     function collect(int dataConsumed, string sim) public onlyOwner {
-        address user = sims[sim];
+        require(isSIM(sim));
 
-        require(isUser(user));
-        require(users[user].balance > 0);
+        SIM userSIM = sims[sim];
+        User user = users[userSIM.user];
 
-        int dataPaid = users[user].dataPaid;
-        int oldDataConsumed = users[user].dataConsumed;
+        require(user.balance > 0);
+
+        int dataPaid = userSIM.dataPaid;
+        int newDataPaid = dataConsumed;
 
         uint payableAmount = uint(dataConsumed - dataPaid) * dataCost;
 
         // If balance can't cover payable
         // empty balance to cover what it can
         // update dataPaid to reflect what's been paid for
-        if (users[user].balance < payableAmount) {
-            payableAmount = users[user].balance;
-            dataConsumed = dataPaid + int(payableAmount / dataCost);
+        if (user.balance < payableAmount) {
+            payableAmount = user.balance;
+            newDataPaid = dataPaid + int(payableAmount / dataCost);
         }
 
-        users[user].balance -= payableAmount;
-        users[user].dataPaid = dataConsumed;
-        users[user].dataConsumed = dataConsumed;
+        user.balance -= payableAmount;
+        userSIM.dataPaid = newDataPaid;
+        userSIM.dataConsumed = dataConsumed;
 
-        if (!msg.sender.send(payableAmount)) {
-            users[user].balance += payableAmount;
-            users[user].dataPaid = dataPaid;
-            users[user].dataConsumed = oldDataConsumed;
-        } else {
-            CollectionMade(user, sim, payableAmount);
-        }
+        balance += payableAmount;
 
-        if (users[user].balance < minimumBalance) {
-            DeactivateSIM(user, sim);
+        LogCollectionMade(userSIM.user, sim, payableAmount);
+
+        // Need to deactivate SIM if the user balance
+        // drops below minimumBalance
+        if (user.balance < minimumBalance) {
+            if (userSIM.isActivated) {
+                userSIM.updateStatus = true;
+
+                LogDeactivateSIM(userSIM.user, sim);
+            }
         }
+    }
+
+    function updateSIMStatus(string sim) public onlyOwner mustBeSIM {
+        require(sims[sim].updateStatus);
+
+        sims[sim].isActivated = !sims[sim].isActivated;
+        sims[sim].updateStatus = false;
+    }
+
+    function getSIMs() public constant onlyOwner returns (string[] sims) {
+        return sims;
     }
 
 }
