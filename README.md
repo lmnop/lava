@@ -70,5 +70,5 @@ $ yarn deploy
 ### Import Contract JSON Blob into External dApps
 
 ```
-$ yarn add git+https://git@github.com/lmnop/early-bird-contract.git
+$ yarn add git+https://git@github.com/lmnop/contracts.git
 ```
