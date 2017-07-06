@@ -31,20 +31,8 @@ contract HasSIMs {
         return simList[sims[sim].index] == sim;
     }
 
-    function getSIM(string sim) public constant mustBeSIM returns (
-        address user,
-        int dataPaid,
-        int dataConsumed,
-        uint lastCollection,
-        bool isActivated,
-    ) {
-        return (
-            sims[sim].user,
-            sims[sim].dataPaid,
-            sims[sim].dataConsumed,
-            sims[sim].lastCollection,
-            sims[sim].isActivated,
-        );
+    function getSIM(string sim) public constant mustBeSIM returns (address user, int dataPaid, int dataConsumed, uint lastCollection, bool isActivated) {
+        return (sims[sim].user, sims[sim].dataPaid, sims[sim].dataConsumed, sims[sim].lastCollection, sims[sim].isActivated);
     }
 
 }

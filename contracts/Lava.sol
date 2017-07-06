@@ -2,45 +2,18 @@ pragma solidity ^0.4.11;
 
 import './Ownable.sol';
 import './HasUsers.sol';
-import './SafeMath.sol';
 
 
 contract Lava is Ownable, HasUsers {
-    using SafeMath for uint256;
-
     uint public minimumBalance;                         // minimum balance to keep SIMs activated
     uint public dataCost;                               // cost per byte in wei
 
-    event LogRegisterSIM(
-        address user,
-        string sim,
-    );
-
-    event LogDepositMade(
-        address user,
-        uint amount,
-    );
-
-    event LogWithdrawlMade(
-        address user,
-        uint amount,
-    );
-
-    event LogActivateSIM(
-        address user,
-        string sim,
-    );
-
-    event LogDeactivateSIM(
-        address user,
-        string sim,
-    );
-
-    event LogCollectionMade(
-        address user,
-        string sim,
-        uint amount,
-    );
+    event LogRegisterSIM(address user, string sim);
+    event LogDepositMade(address user, uint amount);
+    event LogWithdrawlMade(address user, uint amount);
+    event LogActivateSIM(address user, string sim);
+    event LogDeactivateSIM(address user, string sim);
+    event LogCollectionMade(address user, string sim, uint amount);
 
     function Lava() {
         minimumBalance = 0.04 ether;
@@ -52,21 +25,25 @@ contract Lava is Ownable, HasUsers {
         require(!isSIM(sim));
 
         if (!isUser(msg.sender)) {
-            users[msg.sender] = User({
-                index: userList.push(msg.sender) - 1,
-                balance: msg.value,
-            });
+            users[msg.sender] = User(
+                {
+                    index: userList.push(msg.sender) - 1,
+                    balance: msg.value,
+                }
+            );
         }
 
-        sims[sim] = SIM({
-            index: simList.push(sim) - 1,
-            userIndex: users[msg.sender].sims.push(sim) - 1,
-            user: msg.sender,
-            dataPaid: 0,
-            dataConsumed: 0,
-            isActivated: false,
-            updateStatus: true,
-        });
+        sims[sim] = SIM(
+            {
+                index: simList.push(sim) - 1,
+                userIndex: users[msg.sender].sims.push(sim) - 1,
+                user: msg.sender,
+                dataPaid: 0,
+                dataConsumed: 0,
+                isActivated: false,
+                updateStatus: true
+            }
+        );
 
         users[msg.sender].sims.push(sim);
 
