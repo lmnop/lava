@@ -8,7 +8,7 @@ contract HasUsers is HasSIMs {
     struct User {
         uint index;
         uint balance;
-        bytes19[] sims;
+        bytes32[] sims;
     }
 
     mapping (address => User) users;
@@ -28,14 +28,19 @@ contract HasUsers is HasSIMs {
         return userList[users[user].index] == user;
     }
 
-    function isUserSIM(address user, bytes19 sim) public constant returns (bool) {
-        require(isUser(user));
-        require(isSIM(sim));
+    function isUserSIM(address user, bytes32 sim) public constant returns (bool) {
+        if (!isUser(user)) {
+            return false;
+        }
+
+        if (!isSIM(sim)) {
+            return false;
+        }
 
         return sims[sim].user == user;
     }
 
-    function getUser() public constant senderMustBeUser returns (uint balance, bytes19[] sims) {
+    function getUser() public constant senderMustBeUser returns (uint balance, bytes32[] sims) {
         return (users[msg.sender].balance, users[msg.sender].sims);
     }
 

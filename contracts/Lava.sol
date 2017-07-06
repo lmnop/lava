@@ -8,19 +8,19 @@ contract Lava is Ownable, HasUsers {
     uint public minimumBalance;                         // minimum balance to keep SIMs activated
     uint public dataCost;                               // cost per byte in wei
 
-    event LogRegisterSIM(address user, bytes19 sim);
+    event LogRegisterSIM(address user, bytes32 sim);
     event LogDepositMade(address user, uint amount);
     event LogWithdrawlMade(address user, uint amount);
-    event LogActivateSIM(address user, bytes19 sim);
-    event LogDeactivateSIM(address user, bytes19 sim);
-    event LogCollectionMade(address user, bytes19 sim, uint amount);
+    event LogActivateSIM(address user, bytes32 sim);
+    event LogDeactivateSIM(address user, bytes32 sim);
+    event LogCollectionMade(address user, bytes32 sim, uint amount);
 
     function Lava() {
         minimumBalance = 0.04 ether;
         dataCost = 40000000;
     }
 
-    function register(bytes19 sim) public payable {
+    function register(bytes32 sim) public payable {
         require(msg.value >= minimumBalance);
         require(!isSIM(sim));
 
@@ -70,7 +70,7 @@ contract Lava is Ownable, HasUsers {
         }
     }
 
-    function activateSIM(bytes19 sim) public senderMustBeUser {
+    function activateSIM(bytes32 sim) public senderMustBeUser {
         require(isUserSIM(msg.sender, sim));
         require(!sims[sim].updateStatus);
         require(!sims[sim].isActivated);
@@ -81,7 +81,7 @@ contract Lava is Ownable, HasUsers {
         LogActivateSIM(msg.sender, sim);
     }
 
-    function deactivateSIM(bytes19 sim) public senderMustBeUser {
+    function deactivateSIM(bytes32 sim) public senderMustBeUser {
         require(isUserSIM(msg.sender, sim));
         require(!sims[sim].updateStatus);
         require(sims[sim].isActivated);
@@ -91,7 +91,7 @@ contract Lava is Ownable, HasUsers {
         LogDeactivateSIM(msg.sender, sim);
     }
 
-    function collect(int dataConsumed, bytes19 sim) public onlyOwner {
+    function collect(int dataConsumed, bytes32 sim) public onlyOwner {
         require(isSIM(sim));
 
         SIM userSIM = sims[sim];
@@ -132,7 +132,7 @@ contract Lava is Ownable, HasUsers {
         }
     }
 
-    function updateSIMStatus(bytes19 sim) public onlyOwner mustBeSIM(sim) {
+    function updateSIMStatus(bytes32 sim) public onlyOwner mustBeSIM(sim) {
         require(sims[sim].updateStatus);
 
         sims[sim].isActivated = !sims[sim].isActivated;

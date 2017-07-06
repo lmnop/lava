@@ -1,4 +1,4 @@
-const EarlyBird = artifacts.require("./EarlyBird.sol");
+const EarlyBird = artifacts.require('./EarlyBird.sol');
 
 const fixture = {
   stakeAmount: 10000000000000000,

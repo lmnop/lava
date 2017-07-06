@@ -14,16 +14,16 @@ contract HasSIMs {
         bool updateStatus;                              // if the SIM should flip it's status from oracle
     }
 
-    mapping (bytes19 => SIM) sims;
-    bytes19[] simList;
+    mapping (bytes32 => SIM) sims;
+    bytes32[] simList;
 
-    modifier mustBeSIM(bytes19 sim) {
+    modifier mustBeSIM(bytes32 sim) {
         require(isSIM(sim));
 
         _;
     }
 
-    function isSIM(bytes19 sim) public constant returns (bool) {
+    function isSIM(bytes32 sim) public constant returns (bool) {
         if (simList.length == 0) {
             return false;
         }
@@ -31,8 +31,8 @@ contract HasSIMs {
         return simList[sims[sim].index] == sim;
     }
 
-    function getSIM(bytes19 sim) public constant mustBeSIM(sim) returns (address user, int dataPaid, int dataConsumed, uint lastCollection, bool isActivated) {
-        return (sims[sim].user, sims[sim].dataPaid, sims[sim].dataConsumed, sims[sim].lastCollection, sims[sim].isActivated);
+    function getSIM(bytes32 sim) public constant mustBeSIM(sim) returns (address user, int dataPaid, int dataConsumed, uint lastCollection, bool isActivated, bool updateStatus) {
+        return (sims[sim].user, sims[sim].dataPaid, sims[sim].dataConsumed, sims[sim].lastCollection, sims[sim].isActivated, sims[sim].updateStatus);
     }
 
 }
