@@ -61,9 +61,11 @@ contract EarlyBird is Ownable {
 
     function refundStake() public {
         require(isStaker(msg.sender));
-        require(stakers[msg.sender].amount <= 0);
 
         uint refund = stakers[msg.sender].amount;
+
+        require(refund >= 0);
+
         stakers[msg.sender].amount = 0;
 
         if (!msg.sender.send(refund)) {
