@@ -96,7 +96,7 @@ contract('Lava', (accounts) => {
     it('should register new user and new SIM', async () => {
         await contract.register(fixture.SIM_hex, {
           from: accounts[0],
-          value: 40000000000000000,
+          value: fixture.minimumBalance,
         });
 
         const isUser = await contract.isUser(accounts[0]);
@@ -107,6 +107,7 @@ contract('Lava', (accounts) => {
         });
         const SIM = await contract.getSIM(fixture.SIM_hex);
 
+        const userBalance = user[0].toNumber();
         const userSIM_hex = user[1][0];
         const userSIM = web3.toAscii(userSIM_hex).replace(/\0/g, '');
 
@@ -120,6 +121,7 @@ contract('Lava', (accounts) => {
         assert.equal(isUser, true);
         assert.equal(isSIM, true);
         assert.equal(isUserSIM, true);
+        assert.equal(userBalance, fixture.minimumBalance);
         assert.equal(userSIM_hex, fixture.SIM_hex);
         assert.equal(userSIM, fixture.SIM);
         assert.equal(userAddress, accounts[0]);

@@ -26,8 +26,9 @@ contract Lava is Ownable, HasUsers {
 
         if (!isUser(msg.sender)) {
             users[msg.sender].index = userList.push(msg.sender) - 1;
-            users[msg.sender].balance = msg.value;
         }
+
+        users[msg.sender].balance += msg.value;
 
         sims[sim] = SIM(
             {
