@@ -1,4 +1,4 @@
-# LMNOP Contract
+# LMNOP Contracts
 
 ### early-bird
 Contract to capture people's intent to participate in a future contract like a token sale.
