@@ -53,7 +53,7 @@ contract EarlyBird is Ownable {
             stakers[msg.sender].amount = msg.value;
             stakers[msg.sender].blockNumber = block.number;
         } else {
-            throw;
+            revert();
         }
 
         StakeCompleted(msg.sender, block.number);

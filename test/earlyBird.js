@@ -1,3 +1,5 @@
+/* global artifacts, assert, contract */
+
 const EarlyBird = artifacts.require('./EarlyBird.sol');
 
 const fixture = {
@@ -6,10 +8,13 @@ const fixture = {
 
 contract('EarlyBird', (accounts) => {
   let contract;
+  let web3;
 
   before(async () => {
     contract = await EarlyBird.deployed();
-    fixture.balance = contract.contract._eth.getBalance(accounts[0]);
+    web3 = contract.constructor.web3;
+
+    fixture.balance = web3.eth.getBalance(accounts[0]).toNumber();
 
     return Promise.resolve();
   });
@@ -40,14 +45,18 @@ contract('EarlyBird', (accounts) => {
 
   describe('Stake', () => {
     it('should fail if value not equal to stake amount', async () => {
+      let error;
+
       try {
         await contract.stake({
           from: accounts[0],
           value: 20000000000000000,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -63,7 +72,7 @@ contract('EarlyBird', (accounts) => {
 
       const amount = staker[0].toNumber();
       const blockNumber = staker[1].toNumber();
-      const balance = contract.contract._eth.getBalance(accounts[0]);
+      const balance = web3.eth.getBalance(accounts[0]);
 
       fixture.blockNumber = blockNumber;
 
@@ -76,14 +85,18 @@ contract('EarlyBird', (accounts) => {
     });
 
     it('should fail if already staked', async () => {
+      let error;
+
       try {
         await contract.stake({
           from: accounts[0],
           value: fixture.stakeAmount,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -91,13 +104,17 @@ contract('EarlyBird', (accounts) => {
 
   describe('RefundStake', () => {
     it('should fail if never staked', async () => {
+      let error;
+
       try {
         await contract.refundStake.call({
           from: accounts[1],
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -138,13 +155,17 @@ contract('EarlyBird', (accounts) => {
 
   describe('LockEarlyBird', () => {
     it('should not lock if not owner', async () => {
+      let error;
+
       try {
         await contract.lockEarlyBird.call({
           from: accounts[1],
         });
-      } catch(err) {
-        assert.ok(err);
+      } catch (err) {
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -160,14 +181,18 @@ contract('EarlyBird', (accounts) => {
     });
 
     it('should not allow new stakers', async () => {
+      let error;
+
       try {
         await contract.stake({
           from: accounts[1],
           value: fixture.stakeAmount,
         });
-      } catch(err) {
-        assert.ok(err);
+      } catch (err) {
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });

@@ -1,3 +1,5 @@
+/* global artifacts, assert, contract */
+
 const Lava = artifacts.require('./Lava.sol');
 
 const fixture = {
@@ -17,8 +19,8 @@ contract('Lava', (accounts) => {
     web3 = contract.constructor.web3;
 
     fixture.balance = web3.eth.getBalance(accounts[0]).toNumber();
-    fixture.SIM_hex = web3.fromAscii(fixture.SIM).padEnd(66, 0);
-    fixture.SIM2_hex = web3.fromAscii(fixture.SIM2).padEnd(66, 0);
+    fixture.hexSIM = web3.fromAscii(fixture.SIM).padEnd(66, 0);
+    fixture.hexSIM2 = web3.fromAscii(fixture.SIM2).padEnd(66, 0);
 
     return Promise.resolve();
   });
@@ -108,7 +110,7 @@ contract('Lava', (accounts) => {
       let error;
 
       try {
-        await contract.register(fixture.SIM_hex, {
+        await contract.register(fixture.hexSIM, {
           from: accounts[0],
           value: 20000000000000000,
         });
@@ -122,53 +124,53 @@ contract('Lava', (accounts) => {
     });
 
     it('should register new user and new SIM', async () => {
-        await contract.register(fixture.SIM_hex, {
-          from: accounts[0],
-          value: fixture.minimumBalance,
-        });
+      await contract.register(fixture.hexSIM, {
+        from: accounts[0],
+        value: fixture.minimumBalance,
+      });
 
-        const isUser = await contract.isUser(accounts[0]);
-        const isSIM = await contract.isSIM(fixture.SIM_hex);
-        const isUserSIM = await contract.isUserSIM(accounts[0], fixture.SIM_hex);
-        const user = await contract.getUser.call({
-          from: accounts[0],
-        });
-        const SIM = await contract.getSIM(fixture.SIM_hex);
+      const isUser = await contract.isUser(accounts[0]);
+      const isSIM = await contract.isSIM(fixture.hexSIM);
+      const isUserSIM = await contract.isUserSIM(accounts[0], fixture.hexSIM);
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+      const SIM = await contract.getSIM(fixture.hexSIM);
 
-        const userBalance = user[0].toNumber();
-        const userSIM_hex = user[1][0];
-        const userSIM = web3.toAscii(userSIM_hex).replace(/\0/g, '');
+      const userBalance = user[0].toNumber();
+      const userHexSIM = user[1][0];
+      const userSIM = web3.toAscii(userHexSIM).replace(/\0/g, '');
 
-        const userAddress = SIM[0];
-        const dataPaid = SIM[1].toNumber();
-        const dataConsumed = SIM[2].toNumber();
-        const lastCollection = SIM[3].toNumber();
-        const isActivated = SIM[4];
-        const updateStatus = SIM[5];
-        const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
+      const userAddress = SIM[0];
+      const dataPaid = SIM[1].toNumber();
+      const dataConsumed = SIM[2].toNumber();
+      const lastCollection = SIM[3].toNumber();
+      const isActivated = SIM[4];
+      const updateStatus = SIM[5];
+      const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
 
-        assert.ok(isUser);
-        assert.ok(isSIM);
-        assert.ok(isUserSIM);
-        assert.equal(userBalance, fixture.minimumBalance);
-        assert.equal(userSIM_hex, fixture.SIM_hex);
-        assert.equal(userSIM, fixture.SIM);
-        assert.equal(userAddress, accounts[0]);
-        assert.equal(dataPaid, 0);
-        assert.equal(dataConsumed, 0);
-        assert.equal(lastCollection, 0);
-        assert.ok(!isActivated);
-        assert.ok(updateStatus);
-        assert.ok(newBalance <= (fixture.balance + fixture.minimumBalance));
+      assert.ok(isUser);
+      assert.ok(isSIM);
+      assert.ok(isUserSIM);
+      assert.equal(userBalance, fixture.minimumBalance);
+      assert.equal(userHexSIM, fixture.hexSIM);
+      assert.equal(userSIM, fixture.SIM);
+      assert.equal(userAddress, accounts[0]);
+      assert.equal(dataPaid, 0);
+      assert.equal(dataConsumed, 0);
+      assert.equal(lastCollection, 0);
+      assert.ok(!isActivated);
+      assert.ok(updateStatus);
+      assert.ok(newBalance <= (fixture.balance + fixture.minimumBalance));
 
-        return Promise.resolve();
+      return Promise.resolve();
     });
 
     it('should fail if trying to register already registered SIM', async () => {
       let error;
 
       try {
-        await contract.register(fixture.SIM_hex, {
+        await contract.register(fixture.hexSIM, {
           from: accounts[0],
           value: fixture.minimumBalance,
         });
@@ -182,21 +184,21 @@ contract('Lava', (accounts) => {
     });
 
     it('should register new SIM with the same user', async () => {
-      await contract.register(fixture.SIM2_hex, {
+      await contract.register(fixture.hexSIM2, {
         from: accounts[0],
         value: fixture.minimumBalance,
       });
 
-      const isSIM = await contract.isSIM(fixture.SIM2_hex);
-      const isUserSIM = await contract.isUserSIM(accounts[0], fixture.SIM2_hex);
+      const isSIM = await contract.isSIM(fixture.hexSIM2);
+      const isUserSIM = await contract.isUserSIM(accounts[0], fixture.hexSIM2);
       const user = await contract.getUser.call({
         from: accounts[0],
       });
-      const SIM = await contract.getSIM(fixture.SIM2_hex);
+      const SIM = await contract.getSIM(fixture.hexSIM2);
 
       const userBalance = user[0].toNumber();
-      const userSIM_hex = user[1][1];
-      const userSIM = web3.toAscii(userSIM_hex).replace(/\0/g, '');
+      const userHexSIM = user[1][1];
+      const userSIM = web3.toAscii(userHexSIM).replace(/\0/g, '');
 
       const userAddress = SIM[0];
       const dataPaid = SIM[1].toNumber();
@@ -209,7 +211,7 @@ contract('Lava', (accounts) => {
       assert.ok(isSIM);
       assert.ok(isUserSIM);
       assert.equal(userBalance, (fixture.minimumBalance * 2));
-      assert.equal(userSIM_hex, fixture.SIM2_hex);
+      assert.equal(userHexSIM, fixture.hexSIM2);
       assert.equal(userSIM, fixture.SIM2);
       assert.equal(userAddress, accounts[0]);
       assert.equal(dataPaid, 0);
