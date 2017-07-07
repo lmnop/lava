@@ -67,10 +67,10 @@ contract('EarlyBird', (accounts) => {
 
       fixture.blockNumber = blockNumber;
 
-      assert.equal(isStaker, true);
+      assert.ok(isStaker);
       assert.equal(amount, fixture.stakeAmount);
       assert.ok(blockNumber);
-      assert.equal(balance < fixture.balance, true);
+      assert.ok(balance < fixture.balance);
 
       return Promise.resolve();
     });
@@ -111,7 +111,7 @@ contract('EarlyBird', (accounts) => {
       const blockNumber = staker[1].toNumber();
 
       assert.equal(amount, 0);
-      assert.ok(fixture.blockNumber, blockNumber);
+      assert.equal(blockNumber, fixture.blockNumber);
 
       return Promise.resolve();
     });
@@ -128,9 +128,9 @@ contract('EarlyBird', (accounts) => {
       const amount = staker[0].toNumber();
       const blockNumber = staker[1].toNumber();
 
-      assert.equal(isStaker, true);
+      assert.ok(isStaker);
       assert.equal(amount, fixture.stakeAmount);
-      assert.equal(fixture.blockNumber < blockNumber, true);
+      assert.ok(fixture.blockNumber < blockNumber);
 
       return Promise.resolve();
     });

@@ -34,7 +34,7 @@ contract Ownable {
     }
 
     function () {
-        throw;
+        revert();
     }
 
 }

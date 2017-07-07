@@ -4,6 +4,7 @@ const fixture = {
   minimumBalance: 40000000000000000,
   dataCost: 40000000,
   SIM: '1234567890123456789',
+  SIM2: '1234567890123456780',
   badSIM: '0000000000000000000',
 };
 
@@ -15,8 +16,9 @@ contract('Lava', (accounts) => {
     contract = await Lava.deployed();
     web3 = contract.constructor.web3;
 
-    fixture.balance = contract.contract._eth.getBalance(accounts[0]);
+    fixture.balance = web3.eth.getBalance(accounts[0]).toNumber();
     fixture.SIM_hex = web3.fromAscii(fixture.SIM).padEnd(66, 0);
+    fixture.SIM2_hex = web3.fromAscii(fixture.SIM2).padEnd(66, 0);
 
     return Promise.resolve();
   });
@@ -30,6 +32,20 @@ contract('Lava', (accounts) => {
       assert.equal(owner, accounts[0]);
       assert.equal(minimumBalance.toNumber(), fixture.minimumBalance);
       assert.equal(dataCost.toNumber(), fixture.dataCost);
+
+      return Promise.resolve();
+    });
+
+    it('should fail trying to send eth directly to contract', async () => {
+      try {
+        await web3.eth.sendTransaction({
+          from: accounts[0],
+          to: contract.address,
+          value: fixture.minimumBalance,
+        });
+      } catch (err) {
+        assert.ok(err);
+      }
 
       return Promise.resolve();
     });
@@ -117,10 +133,11 @@ contract('Lava', (accounts) => {
         const lastCollection = SIM[3].toNumber();
         const isActivated = SIM[4];
         const updateStatus = SIM[5];
+        const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
 
-        assert.equal(isUser, true);
-        assert.equal(isSIM, true);
-        assert.equal(isUserSIM, true);
+        assert.ok(isUser);
+        assert.ok(isSIM);
+        assert.ok(isUserSIM);
         assert.equal(userBalance, fixture.minimumBalance);
         assert.equal(userSIM_hex, fixture.SIM_hex);
         assert.equal(userSIM, fixture.SIM);
@@ -128,10 +145,99 @@ contract('Lava', (accounts) => {
         assert.equal(dataPaid, 0);
         assert.equal(dataConsumed, 0);
         assert.equal(lastCollection, 0);
-        assert.equal(isActivated, false);
-        assert.equal(updateStatus, true);
+        assert.ok(!isActivated);
+        assert.ok(updateStatus);
+        assert.ok(newBalance <= (fixture.balance + fixture.minimumBalance));
 
         return Promise.resolve();
+    });
+
+    it('should fail if trying to register already registered SIM', async () => {
+      try {
+        await contract.register(fixture.SIM_hex, {
+          from: accounts[0],
+          value: fixture.minimumBalance,
+        });
+      } catch (err) {
+        assert.ok(err);
+      }
+
+      return Promise.resolve();
+    });
+
+    it('should register new SIM with the same user', async () => {
+      await contract.register(fixture.SIM2_hex, {
+        from: accounts[0],
+        value: fixture.minimumBalance,
+      });
+
+      const isSIM = await contract.isSIM(fixture.SIM2_hex);
+      const isUserSIM = await contract.isUserSIM(accounts[0], fixture.SIM2_hex);
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+      const SIM = await contract.getSIM(fixture.SIM2_hex);
+
+      const userBalance = user[0].toNumber();
+      const userSIM_hex = user[1][1];
+      const userSIM = web3.toAscii(userSIM_hex).replace(/\0/g, '');
+
+      const userAddress = SIM[0];
+      const dataPaid = SIM[1].toNumber();
+      const dataConsumed = SIM[2].toNumber();
+      const lastCollection = SIM[3].toNumber();
+      const isActivated = SIM[4];
+      const updateStatus = SIM[5];
+      const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
+
+      assert.ok(isSIM);
+      assert.ok(isUserSIM);
+      assert.equal(userBalance, (fixture.minimumBalance * 2));
+      assert.equal(userSIM_hex, fixture.SIM2_hex);
+      assert.equal(userSIM, fixture.SIM2);
+      assert.equal(userAddress, accounts[0]);
+      assert.equal(dataPaid, 0);
+      assert.equal(dataConsumed, 0);
+      assert.equal(lastCollection, 0);
+      assert.ok(!isActivated);
+      assert.ok(updateStatus);
+      assert.ok(newBalance <= (fixture.balance + (fixture.minimumBalance * 2)));
+
+      return Promise.resolve();
+    });
+  });
+
+  describe('Deposit', () => {
+    it('should fail if not user', async () => {
+      try {
+        await contract.deposit({
+          from: accounts[1],
+          value: fixture.minimumBalance,
+        });
+      } catch (err) {
+        assert.ok(err);
+      }
+
+      return Promise.resolve();
+    });
+
+    it('should deposit eth into user account', async () => {
+      await contract.deposit({
+        from: accounts[0],
+        value: fixture.minimumBalance,
+      });
+
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+
+      const userBalance = user[0].toNumber();
+      const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
+
+      assert.equal(userBalance, (fixture.minimumBalance * 3));
+      assert.ok(newBalance <= (fixture.balance + (fixture.minimumBalance * 3)));
+
+      return Promise.resolve();
     });
   });
 });
