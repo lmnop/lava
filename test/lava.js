@@ -37,6 +37,8 @@ contract('Lava', (accounts) => {
     });
 
     it('should fail trying to send eth directly to contract', async () => {
+      let error;
+
       try {
         await web3.eth.sendTransaction({
           from: accounts[0],
@@ -44,8 +46,10 @@ contract('Lava', (accounts) => {
           value: fixture.minimumBalance,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -83,13 +87,17 @@ contract('Lava', (accounts) => {
 
   describe('getUser', () => {
     it('should fail if not user', async () => {
+      let error;
+
       try {
         await contract.getUser.call({
           from: accounts[1],
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -97,14 +105,18 @@ contract('Lava', (accounts) => {
 
   describe('Register', () => {
     it('should fail if amount is less than minimum balance', async () => {
+      let error;
+
       try {
         await contract.register(fixture.SIM_hex, {
           from: accounts[0],
           value: 20000000000000000,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -153,14 +165,18 @@ contract('Lava', (accounts) => {
     });
 
     it('should fail if trying to register already registered SIM', async () => {
+      let error;
+
       try {
         await contract.register(fixture.SIM_hex, {
           from: accounts[0],
           value: fixture.minimumBalance,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -209,14 +225,35 @@ contract('Lava', (accounts) => {
 
   describe('Deposit', () => {
     it('should fail if not user', async () => {
+      let error;
+
       try {
         await contract.deposit({
           from: accounts[1],
           value: fixture.minimumBalance,
         });
       } catch (err) {
-        assert.ok(err);
+        error = err;
       }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if deposit amount is 0', async () => {
+      let error;
+
+      try {
+        await contract.deposit({
+          from: accounts[0],
+          value: 0,
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
@@ -236,6 +273,52 @@ contract('Lava', (accounts) => {
 
       assert.equal(userBalance, (fixture.minimumBalance * 3));
       assert.ok(newBalance <= (fixture.balance + (fixture.minimumBalance * 3)));
+
+      return Promise.resolve();
+    });
+  });
+
+  describe('Withdraw', () => {
+    it('should fail if not user', async () => {
+      let error;
+
+      try {
+        await contract.withdraw(fixture.minimumBalance, {
+          from: accounts[1],
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if withdraw amount is greater than balance', async () => {
+      let error;
+
+      try {
+        await contract.withdraw(fixture.minimumBalance * 4);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should withdraw eth from user balance', async () => {
+      await contract.withdraw(fixture.minimumBalance);
+
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+
+      const userBalance = user[0].toNumber();
+
+      assert.equal(userBalance, (fixture.minimumBalance * 2));
 
       return Promise.resolve();
     });
