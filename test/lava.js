@@ -8,7 +8,7 @@ const fixture = {
   SIM: '1234567890123456789',
   SIM2: '1234567890123456780',
   badSIM: '0000000000000000000',
-  data: 1000,
+  data: 1000000000,
 };
 
 contract('Lava', (accounts) => {
@@ -485,8 +485,8 @@ contract('Lava', (accounts) => {
 
       assert.equal(balance, collection);
       assert.equal(userBalance, 0);
-      assert.equal(dataPaid, fixture.data);
-      assert.equal(dataConsumed, fixture.data);
+      assert.equal(dataPaid, fixture.data * 2);
+      assert.equal(dataConsumed, fixture.data * 2);
       assert.ok(lastCollection);
       assert.ok(updateStatus);
 
