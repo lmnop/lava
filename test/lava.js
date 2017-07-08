@@ -243,13 +243,13 @@ contract('Lava', (accounts) => {
       return Promise.resolve();
     });
 
-    it('should fail if deposit amount is 0', async () => {
+    it('should fail if deposit amount is less than minimum balance', async () => {
       let error;
 
       try {
         await contract.deposit({
           from: accounts[0],
-          value: 0,
+          value: fixture.minimumBalance - 10,
         });
       } catch (err) {
         error = err;

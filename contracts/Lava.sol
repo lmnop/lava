@@ -49,14 +49,9 @@ contract Lava is Ownable, HasUsers {
     }
 
     function deposit() public payable senderMustBeUser {
-        require(msg.value > 0);
+        require(msg.value >= minimumBalance);
 
-        uint initialBalance = users[msg.sender].balance;
-        uint newBalance = initialBalance + msg.value;
-
-        require(newBalance >= minimumBalance);
-
-        users[msg.sender].balance = newBalance;
+        users[msg.sender].balance += msg.value;
 
         LogDepositMade(msg.sender, msg.value);
     }
