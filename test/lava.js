@@ -8,6 +8,7 @@ const fixture = {
   SIM: '1234567890123456789',
   SIM2: '1234567890123456780',
   badSIM: '0000000000000000000',
+  data: 1000,
 };
 
 contract('Lava', (accounts) => {
@@ -420,11 +421,24 @@ contract('Lava', (accounts) => {
       return Promise.resolve();
     });
 
-    it('should update user account and move eth to main balance', async () => {
-      const data = 1000;
-      const collection = data * fixture.dataCost;
+    it('should fail if no data consumed', async () => {
+      let error;
 
-      await contract.collect(data, fixture.hexSIM);
+      try {
+        await contract.collect(0, fixture.hexSIM);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should update user account and move eth to main balance', async () => {
+      const collection = fixture.data * fixture.dataCost;
+
+      await contract.collect(fixture.data, fixture.hexSIM);
 
       const balance = (await contract.balance()).toNumber();
 
@@ -442,10 +456,39 @@ contract('Lava', (accounts) => {
 
       assert.equal(balance, collection);
       assert.equal(userBalance, (fixture.minimumBalance * 2) - collection);
-      assert.equal(dataPaid, data);
-      assert.equal(dataConsumed, data);
+      assert.equal(dataPaid, fixture.data);
+      assert.equal(dataConsumed, fixture.data);
       assert.ok(lastCollection);
       assert.ok(!updateStatus);
+
+      return Promise.resolve();
+    });
+
+    it('should set pending status if user balance drops below minimum', async () => {
+      const collection = (fixture.data * 2) * fixture.dataCost;
+
+      await contract.collect(fixture.data * 2, fixture.hexSIM);
+
+      const balance = (await contract.balance()).toNumber();
+
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+
+      const SIM = await contract.getSIM(fixture.hexSIM);
+
+      const userBalance = user[0].toNumber();
+      const dataPaid = SIM[1].toNumber();
+      const dataConsumed = SIM[2].toNumber();
+      const lastCollection = SIM[3].toNumber();
+      const updateStatus = SIM[5];
+
+      assert.equal(balance, collection);
+      assert.equal(userBalance, 0);
+      assert.equal(dataPaid, fixture.data);
+      assert.equal(dataConsumed, fixture.data);
+      assert.ok(lastCollection);
+      assert.ok(updateStatus);
 
       return Promise.resolve();
     });
