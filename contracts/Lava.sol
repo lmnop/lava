@@ -5,8 +5,8 @@ import './HasUsers.sol';
 
 
 contract Lava is Ownable, HasUsers {
-    uint public minimumBalance;                         // minimum balance to keep SIMs activated
-    uint public dataCost;                               // cost per byte in wei
+    uint constant public MINIMUM_BALANCE = 0.04 ether;      // minimum balance to keep SIMs activated
+    uint constant public DATA_COST = 40000000;              // cost per byte in wei
 
     event LogRegisterSIM(address user, bytes32 sim);
     event LogDepositMade(address user, uint amount);
@@ -15,13 +15,8 @@ contract Lava is Ownable, HasUsers {
     event LogDeactivateSIM(address user, bytes32 sim);
     event LogCollectionMade(address user, bytes32 sim, uint amount);
 
-    function Lava() {
-        minimumBalance = 0.04 ether;
-        dataCost = 40000000;
-    }
-
     function register(bytes32 sim) public payable {
-        require(msg.value >= minimumBalance);
+        require(msg.value >= MINIMUM_BALANCE);
         require(!isSIM(sim));
 
         if (!isUser(msg.sender)) {
@@ -49,7 +44,7 @@ contract Lava is Ownable, HasUsers {
     }
 
     function deposit() public payable senderMustBeUser {
-        require(msg.value >= minimumBalance);
+        require(msg.value >= MINIMUM_BALANCE);
 
         users[msg.sender].balance += msg.value;
 
@@ -72,7 +67,7 @@ contract Lava is Ownable, HasUsers {
         require(isUserSIM(msg.sender, sim));
         require(!sims[sim].updateStatus);
         require(!sims[sim].isActivated);
-        require(users[msg.sender].balance >= minimumBalance);
+        require(users[msg.sender].balance >= MINIMUM_BALANCE);
 
         sims[sim].updateStatus = true;
 
@@ -91,23 +86,22 @@ contract Lava is Ownable, HasUsers {
 
     function collect(int dataConsumed, bytes32 sim) public onlyOwner {
         require(isSIM(sim));
+        require(dataConsumed > 0);
 
         SIM userSIM = sims[sim];
         User user = users[userSIM.user];
 
-        require(user.balance > 0);
-
         int dataPaid = userSIM.dataPaid;
         int newDataPaid = dataConsumed;
 
-        uint payableAmount = uint(dataConsumed - dataPaid) * dataCost;
+        uint payableAmount = uint(dataConsumed - dataPaid) * DATA_COST;
 
         // If balance can't cover payable
         // empty balance to cover what it can
         // update dataPaid to reflect what's been paid for
         if (user.balance < payableAmount) {
             payableAmount = user.balance;
-            newDataPaid = dataPaid + int(payableAmount / dataCost);
+            newDataPaid = dataPaid + int(payableAmount / DATA_COST);
         }
 
         user.balance -= payableAmount;
@@ -121,7 +115,7 @@ contract Lava is Ownable, HasUsers {
 
         // Need to deactivate SIM if the user balance
         // drops below minimumBalance
-        if (user.balance < minimumBalance) {
+        if (user.balance < MINIMUM_BALANCE) {
             if (userSIM.isActivated) {
                 userSIM.updateStatus = true;
 

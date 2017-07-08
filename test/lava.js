@@ -28,8 +28,8 @@ contract('Lava', (accounts) => {
   describe('Deploy', () => {
     it('parameters are correct', async () => {
       const owner = await contract.owner();
-      const minimumBalance = await contract.minimumBalance();
-      const dataCost = await contract.dataCost();
+      const minimumBalance = await contract.MINIMUM_BALANCE();
+      const dataCost = await contract.DATA_COST();
 
       assert.equal(owner, accounts[0]);
       assert.equal(minimumBalance.toNumber(), fixture.minimumBalance);
@@ -321,6 +321,52 @@ contract('Lava', (accounts) => {
       const userBalance = user[0].toNumber();
 
       assert.equal(userBalance, (fixture.minimumBalance * 2));
+
+      return Promise.resolve();
+    });
+  });
+
+  describe('Collect', () => {
+    it('should fail if not owner', async () => {
+      let error;
+
+      try {
+        await contract.collect(fixture.minimumBalance, fixture.SIM, {
+          from: accounts[1],
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if not a registered SIM', async () => {
+      let error;
+
+      try {
+        await contract.collect(fixture.minimumBalance, fixture.badSIM);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if no data consumed', async () => {
+      let error;
+
+      try {
+        await contract.collect(0, fixture.SIM);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
 
       return Promise.resolve();
     });
