@@ -63,23 +63,18 @@ contract Lava is Ownable, HasUsers {
         }
     }
 
-    function activateSIM(bytes32 sim) public mustBeSenderSIM(sim) {
+    function flipSIMStatus(bytes32 sim) public mustBeSenderSIM(sim) {
         require(!sims[sim].updateStatus);
-        require(!sims[sim].isActivated);
-        require(users[msg.sender].balance >= MINIMUM_BALANCE);
+
+        if (!sims[sim].isActivated) {
+            require(users[msg.sender].balance >= MINIMUM_BALANCE);
+
+            LogActivateSIM(msg.sender, sim);
+        } else {
+            LogDeactivateSIM(msg.sender, sim);
+        }
 
         sims[sim].updateStatus = true;
-
-        LogActivateSIM(msg.sender, sim);
-    }
-
-    function deactivateSIM(bytes32 sim) public mustBeSenderSIM(sim) {
-        require(!sims[sim].updateStatus);
-        require(sims[sim].isActivated);
-
-        sims[sim].updateStatus = true;
-
-        LogDeactivateSIM(msg.sender, sim);
     }
 
     function collect(int dataConsumed, bytes32 sim) public onlyOwner mustBeSIM(sim) {
