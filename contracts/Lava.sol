@@ -63,8 +63,7 @@ contract Lava is Ownable, HasUsers {
         }
     }
 
-    function activateSIM(bytes32 sim) public senderMustBeUser {
-        require(isUserSIM(msg.sender, sim));
+    function activateSIM(bytes32 sim) public mustBeSenderSIM(sim) {
         require(!sims[sim].updateStatus);
         require(!sims[sim].isActivated);
         require(users[msg.sender].balance >= MINIMUM_BALANCE);
@@ -74,8 +73,7 @@ contract Lava is Ownable, HasUsers {
         LogActivateSIM(msg.sender, sim);
     }
 
-    function deactivateSIM(bytes32 sim) public senderMustBeUser {
-        require(isUserSIM(msg.sender, sim));
+    function deactivateSIM(bytes32 sim) public mustBeSenderSIM(sim) {
         require(!sims[sim].updateStatus);
         require(sims[sim].isActivated);
 
@@ -84,8 +82,7 @@ contract Lava is Ownable, HasUsers {
         LogDeactivateSIM(msg.sender, sim);
     }
 
-    function collect(int dataConsumed, bytes32 sim) public onlyOwner {
-        require(isSIM(sim));
+    function collect(int dataConsumed, bytes32 sim) public onlyOwner mustBeSIM(sim) {
         require(dataConsumed > 0);
 
         SIM userSIM = sims[sim];
@@ -95,6 +92,8 @@ contract Lava is Ownable, HasUsers {
         int newDataPaid = dataConsumed;
 
         uint payableAmount = uint(dataConsumed - dataPaid) * DATA_COST;
+
+        require(payableAmount > 0);
 
         // If balance can't cover payable
         // empty balance to cover what it can

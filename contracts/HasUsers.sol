@@ -20,6 +20,12 @@ contract HasUsers is HasSIMs {
         _;
     }
 
+    modifier mustBeSenderSIM(bytes32 sim) {
+        require(isUserSIM(msg.sender, sim));
+
+        _;
+    }
+
     function isUser(address user) public constant returns (bool) {
         if (userList.length == 0) {
             return false;

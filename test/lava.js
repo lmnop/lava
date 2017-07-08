@@ -25,7 +25,7 @@ contract('Lava', (accounts) => {
     return Promise.resolve();
   });
 
-  describe('Deploy', () => {
+  describe('deploy', () => {
     it('parameters are correct', async () => {
       const owner = await contract.owner();
       const minimumBalance = await contract.MINIMUM_BALANCE();
@@ -105,7 +105,7 @@ contract('Lava', (accounts) => {
     });
   });
 
-  describe('Register', () => {
+  describe('register', () => {
     it('should fail if amount is less than minimum balance', async () => {
       let error;
 
@@ -225,7 +225,7 @@ contract('Lava', (accounts) => {
     });
   });
 
-  describe('Deposit', () => {
+  describe('deposit', () => {
     it('should fail if not user', async () => {
       let error;
 
@@ -280,7 +280,7 @@ contract('Lava', (accounts) => {
     });
   });
 
-  describe('Withdraw', () => {
+  describe('withdraw', () => {
     it('should fail if not user', async () => {
       let error;
 
@@ -326,12 +326,75 @@ contract('Lava', (accounts) => {
     });
   });
 
-  describe('Collect', () => {
+  describe('updateSIMStatus', () => {
     it('should fail if not owner', async () => {
       let error;
 
       try {
-        await contract.collect(fixture.minimumBalance, fixture.SIM, {
+        await contract.updateSIMStatus(fixture.hexSIM, {
+          from: accounts[1],
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if not a registered SIM', async () => {
+      let error;
+
+      try {
+        await contract.updateSIMStatus(fixture.badSIM);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+
+    it('should update sim status if pending update', async () => {
+      const oldSIM = await contract.getSIM(fixture.hexSIM);
+      const oldIsActivated = oldSIM[4];
+      const oldUpdateStatus = oldSIM[5];
+
+      await contract.updateSIMStatus(fixture.hexSIM);
+
+      const SIM = await contract.getSIM(fixture.hexSIM);
+      const isActivated = SIM[4];
+      const updateStatus = SIM[5];
+
+      assert.ok(oldIsActivated !== isActivated);
+      assert.ok(oldUpdateStatus !== updateStatus);
+
+      return Promise.resolve();
+    });
+
+    it('should fail if not pending update', async () => {
+      let error;
+
+      try {
+        await contract.updateSIMStatus(fixture.hexSIM);
+      } catch (err) {
+        error = err;
+      }
+
+      assert.ok(error);
+
+      return Promise.resolve();
+    });
+  });
+
+  describe('collect', () => {
+    it('should fail if not owner', async () => {
+      let error;
+
+      try {
+        await contract.collect(fixture.minimumBalance, fixture.hexSIM, {
           from: accounts[1],
         });
       } catch (err) {
@@ -357,16 +420,32 @@ contract('Lava', (accounts) => {
       return Promise.resolve();
     });
 
-    it('should fail if no data consumed', async () => {
-      let error;
+    it('should update user account and move eth to main balance', async () => {
+      const data = 1000;
+      const collection = data * fixture.dataCost;
 
-      try {
-        await contract.collect(0, fixture.SIM);
-      } catch (err) {
-        error = err;
-      }
+      await contract.collect(data, fixture.hexSIM);
 
-      assert.ok(error);
+      const balance = (await contract.balance()).toNumber();
+
+      const user = await contract.getUser.call({
+        from: accounts[0],
+      });
+
+      const SIM = await contract.getSIM(fixture.hexSIM);
+
+      const userBalance = user[0].toNumber();
+      const dataPaid = SIM[1].toNumber();
+      const dataConsumed = SIM[2].toNumber();
+      const lastCollection = SIM[3].toNumber();
+      const updateStatus = SIM[5];
+
+      assert.equal(balance, collection);
+      assert.equal(userBalance, (fixture.minimumBalance * 2) - collection);
+      assert.equal(dataPaid, data);
+      assert.equal(dataConsumed, data);
+      assert.ok(lastCollection);
+      assert.ok(!updateStatus);
 
       return Promise.resolve();
     });
