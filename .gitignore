@@ -1,5 +1,6 @@
 node_modules
 geth.log
 geth-test.log
+geth-dev.log
 .DS_Store
 config.js

@@ -9,9 +9,11 @@
   "main": "index.js",
   "scripts": {
     "compile": "truffle compile",
+    "deploy-dev": "truffle migrate --network development --reset",
     "deploy-rinkeby": "truffle migrate --network rinkeby --reset",
     "deploy-test": "truffle migrate --network test --reset",
     "deploy": "truffle migrate --network live --reset",
+    "geth-dev": "testrpc > geth-dev.log",
     "geth-test": "geth --testnet --rpc --rpcport 8546 console 2>> geth-test.log",
     "geth": "geth --rpc --rpcport 8547 console 2>> geth.log",
     "test": "sh scripts/test.sh",

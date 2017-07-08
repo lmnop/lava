@@ -13,6 +13,7 @@ Contract to register a SIM and manager your data usage. Data usage is paid for b
 - [yarn](https://yarnpkg.com/)
 - [truffle](http://truffleframework.com/)
 - [geth](https://github.com/ethereum/go-ethereum)
+- [testrpc](https://github.com/ethereumjs/testrpc)
 - [solium](https://github.com/duaraghav8/solium)
 
 
@@ -44,10 +45,17 @@ $ yarn compile
 ```
 
 
+### Deploy on TestRPC
+
+```
+$ yarn deploy-dev
+```
+
+
 ### Deploy on Rinkeby Testnet
 
 ```
-$ yarn deploy-Rinkeby
+$ yarn deploy-rinkeby
 ```
 
 
