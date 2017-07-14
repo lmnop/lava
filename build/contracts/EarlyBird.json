@@ -289,8 +289,44 @@
       "links": {},
       "address": "0x93e3291942f152b045828c3c906f9b399fa2eed0",
       "updated_at": 1499558267688
+    },
+    "1500054010470": {
+      "events": {
+        "0x1db000f103b8324c7cd49fa51320c82dca922c81eed3d0e1b0010f94fbdd9fc3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "staker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "blockNumber",
+              "type": "uint256"
+            }
+          ],
+          "name": "StakeCompleted",
+          "type": "event"
+        },
+        "0xde939f2b957cf1cae4a80affd145a63c2b2d7b08b7e9e755b20557b8fc5e703f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "staker",
+              "type": "address"
+            }
+          ],
+          "name": "StakeRefunded",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xa404179e29b1a58032db6cc72dd337531e0c4d84",
+      "updated_at": 1500057474879
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1499558267688
+  "updated_at": 1500057474879
 }
