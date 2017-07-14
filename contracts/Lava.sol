@@ -8,9 +8,8 @@ contract Lava is Ownable, HasUsers {
     uint constant public MINIMUM_BALANCE = 0.04 ether;      // minimum balance to keep SIMs activated
     uint constant public DATA_COST = 40000000;              // cost per byte in wei
 
-    event LogRegisterSIM(address user, bytes32 sim);
     event LogDepositMade(address user, uint amount);
-    event LogWithdrawlMade(address user, uint amount);
+    event LogWithdrawMade(address user, uint amount);
     event LogActivateSIM(address user, bytes32 sim);
     event LogDeactivateSIM(address user, bytes32 sim);
     event LogCollectionMade(address user, bytes32 sim, uint amount);
@@ -38,7 +37,6 @@ contract Lava is Ownable, HasUsers {
             }
         );
 
-        LogRegisterSIM(msg.sender, sim);
         LogActivateSIM(msg.sender, sim);
         LogDepositMade(msg.sender, msg.value);
     }
@@ -59,7 +57,7 @@ contract Lava is Ownable, HasUsers {
         if (!msg.sender.send(withdrawAmount)) {
             users[msg.sender].balance += withdrawAmount;
         } else {
-            LogWithdrawlMade(msg.sender, withdrawAmount);
+            LogWithdrawMade(msg.sender, withdrawAmount);
         }
     }
 

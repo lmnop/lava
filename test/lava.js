@@ -130,6 +130,28 @@ contract('Lava', (accounts) => {
         value: fixture.minimumBalance,
       });
 
+      await (() => {
+        const activateSIM = contract.LogActivateSIM();
+
+        activateSIM.watch((error, event) => {
+          activateSIM.stopWatching();
+
+          assert.equal(event.args.user, accounts[0]);
+          assert.equal(event.args.sim, fixture.hexSIM);
+        });
+      })();
+
+      await (() => {
+        const depositMade = contract.LogDepositMade();
+
+        depositMade.watch((error, event) => {
+          depositMade.stopWatching();
+
+          assert.equal(event.args.user, accounts[0]);
+          assert.equal(event.args.amount.toNumber(), fixture.minimumBalance);
+        });
+      })();
+
       const isUser = await contract.isUser(accounts[0]);
       const isSIM = await contract.isSIM(fixture.hexSIM);
       const isUserSIM = await contract.isUserSIM(accounts[0], fixture.hexSIM);
@@ -267,6 +289,17 @@ contract('Lava', (accounts) => {
         value: fixture.minimumBalance,
       });
 
+      await (() => {
+        const depositMade = contract.LogDepositMade();
+
+        depositMade.watch((error, event) => {
+          depositMade.stopWatching();
+
+          assert.equal(event.args.user, accounts[0]);
+          assert.equal(event.args.amount.toNumber(), fixture.minimumBalance);
+        });
+      })();
+
       const user = await contract.getUser.call({
         from: accounts[0],
       });
@@ -314,6 +347,17 @@ contract('Lava', (accounts) => {
 
     it('should withdraw eth from user balance', async () => {
       await contract.withdraw(fixture.minimumBalance);
+
+      await (() => {
+        const withdrawMade = contract.LogWithdrawMade();
+
+        withdrawMade.watch((error, event) => {
+          withdrawMade.stopWatching();
+
+          assert.equal(event.args.user, accounts[0]);
+          assert.equal(event.args.amount.toNumber(), fixture.minimumBalance);
+        });
+      })();
 
       const user = await contract.getUser.call({
         from: accounts[0],
@@ -439,6 +483,18 @@ contract('Lava', (accounts) => {
       const collection = fixture.data * fixture.dataCost;
 
       await contract.collect(fixture.data, fixture.hexSIM);
+
+      await (() => {
+        const collectionMade = contract.LogCollectionMade();
+
+        collectionMade.watch((error, event) => {
+          collectionMade.stopWatching();
+
+          assert.equal(event.args.user, accounts[0]);
+          assert.equal(event.args.sim, fixture.hexSIM);
+          assert.equal(event.args.amount.toNumber(), collection);
+        });
+      })();
 
       const balance = (await contract.balance()).toNumber();
 
