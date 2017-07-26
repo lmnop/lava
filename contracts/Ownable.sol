@@ -22,14 +22,13 @@ contract Ownable {
         }
     }
 
-    function emptyBalance() public onlyOwner {
-        require(balance > 0);
+    function withdrawBalance(uint withdrawAmount) public onlyOwner {
+        require(withdrawAmount <= balance);
 
-        uint oldBalance = balance;
-        balance = 0;
+        balance -= withdrawAmount;
 
-        if (!msg.sender.send(oldBalance)) {
-            balance = oldBalance;
+        if (!msg.sender.send(withdrawAmount)) {
+            balance += withdrawAmount;
         }
     }
 

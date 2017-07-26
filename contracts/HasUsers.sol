@@ -7,8 +7,9 @@ contract HasUsers is HasSIMs {
 
     struct User {
         uint index;
-        uint balance;
-        bytes32[] sims;
+        uint balance;       // refundable amount for the user
+        int data;           // amount of data in bytes available 
+        bytes32[] sims;     // registered SIMs the user owns
     }
 
     mapping (address => User) users;
@@ -46,8 +47,22 @@ contract HasUsers is HasSIMs {
         return sims[sim].user == user;
     }
 
-    function getUser() public constant senderMustBeUser returns (uint balance, bytes32[] sims) {
-        return (users[msg.sender].balance, users[msg.sender].sims);
+    function getUser() public constant senderMustBeUser returns (uint balance, int data, bytes32[] sims) {
+        return (users[msg.sender].balance, users[msg.sender].data, users[msg.sender].sims);
+    }
+
+    function deposit() public payable senderMustBeUser {
+        users[msg.sender].balance += msg.value;
+    }
+
+    function withdraw(uint withdrawAmount) public senderMustBeUser {
+        require(withdrawAmount <= users[msg.sender].balance);
+
+        users[msg.sender].balance -= withdrawAmount;
+
+        if (!msg.sender.send(withdrawAmount)) {
+            users[msg.sender].balance += withdrawAmount;
+        }
     }
 
 }
