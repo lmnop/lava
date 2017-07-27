@@ -45,5 +45,8 @@
       "mocha/no-skipped-tests": "error",
       "mocha/no-identical-title": "error"
     }
+  },
+  "dependencies": {
+    "dotenv": "^4.0.0"
   }
 }
