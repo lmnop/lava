@@ -1,6 +1,12 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const config = require('./config');
 
+const rinkebyProvider = new HDWalletProvider(config.mnemonic, config.rinkebyUrl);
+const mainProvider = new HDWalletProvider(config.mnemonic, config.mainUrl);
+
+console.log('Rinkeby Address', rinkebyProvider.address);
+console.log('Main Address', mainProvider.address);
+
 module.exports = {
   networks: {
     development: {
@@ -8,18 +14,13 @@ module.exports = {
       port: 8545,
       network_id: "*",
     },
-    test: {
-      host: 'localhost',
-      port: 8546,
-      network_id: "*",
-    },
     rinkeby: {
-      provider: new HDWalletProvider(config.mnemonic, config.rinkebyUrl),
+      provider: rinkebyProvider,
       network_id: 4,
       gas: 4612388,
     },
-    live: {
-      provider: new HDWalletProvider(config.mnemonic, config.mainUrl),
+    main: {
+      provider: mainProvider,
       network_id: 1,
       gas: 4612388,
     },
