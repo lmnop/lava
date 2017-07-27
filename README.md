@@ -1,10 +1,9 @@
-# LMNOP Contracts
+# Lava Contract & Oracle
 
-### early-bird
-Contract to capture people's intent to participate in a future contract like a token sale.
-
-### lava
 Contract to register a SIM and manager your data usage. Data usage is paid for by having ether in the contract.
+
+Oracle to listen to lava contract events and interact with Twilio's wireless service.
+
 
 ## Requirements
 
@@ -12,21 +11,20 @@ Contract to register a SIM and manager your data usage. Data usage is paid for b
 - [npm v5.0.0+](https://www.npmjs.com/)
 - [yarn](https://yarnpkg.com/)
 - [truffle](http://truffleframework.com/)
-- [geth](https://github.com/ethereum/go-ethereum)
 - [testrpc](https://github.com/ethereumjs/testrpc)
 - [solium](https://github.com/duaraghav8/solium)
 
 
 ### Install
 
-```
+```shell
 $ yarn install
 ```
 
 
 ### Test
 
-```
+```shell
 $ yarn test
 ```
 
@@ -38,45 +36,43 @@ $ yarn lint
 ```
 
 
-### Compile
+### Start Oracle
 
+```shell
+$ yarn start
 ```
+
+
+### Compile Contracts
+
+```shell
 $ yarn compile
 ```
 
 
 ### Deploy on TestRPC
 
-```
+```shell
 $ yarn deploy-dev
 ```
 
 
 ### Deploy on Rinkeby Testnet
 
-```
+```shell
 $ yarn deploy-rinkeby
-```
-
-
-### Deploy on Local Testnet
-
-```
-$ yarn geth-test
-$ yarn deploy-test
 ```
 
 
 ### Deploy on Mainnet
 
-```
-$ yarn geth
+```shell
 $ yarn deploy
 ```
 
 
-### Import Contract JSON Blob into External dApps
+### To Import Compiled Lava Contract into a dApp
 
-```
-$ yarn add git+https://git@github.com/lmnop/contracts.git
+```shell
+$ yarn add git+https://git@github.com/lmnop/lava.git
 ```

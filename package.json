@@ -1,5 +1,5 @@
 {
-  "name": "lmnop-contracts",
+  "name": "lava",
   "version": "0.0.1",
   "license": "MIT",
   "engines": {
@@ -8,14 +8,34 @@
   },
   "main": "index.js",
   "scripts": {
+    "start": "node oracle/index.js",
     "compile": "truffle compile",
     "deploy-dev": "truffle migrate --network development",
     "deploy-rinkeby": "truffle migrate --network rinkeby",
     "deploy": "truffle migrate --network main",
     "test": "sh scripts/test.sh",
-    "lint-tests": "eslint test",
-    "lint-contracts": "solium --dir .",
-    "lint": "yarn lint-tests && yarn lint-contracts"
+    "lint-node": "eslint test oracle",
+    "lint-solidity": "solium --dir .",
+    "lint": "yarn lint-node && yarn lint-solidity"
+  },
+  "dependencies": {
+    "babel-preset-es2015-node5": "^1.2.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "co": "^4.6.0",
+    "dotenv": "^4.0.0",
+    "koa": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-cors": "^0.0.16",
+    "koa-json": "^2.0.2",
+    "koa-router": "^7.2.1",
+    "lodash": "^4.17.4",
+    "node-fetch": "^1.7.1",
+    "truffle-contract": "^2.0.4",
+    "truffle-hdwallet-provider": "^0.0.3",
+    "twilio": "^4.6.0",
+    "web3": "^1.0.0-beta.13"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -24,13 +44,13 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-mocha": "^4.11.0",
-    "eslint-plugin-react": "^7.1.0",
-    "truffle-hdwallet-provider": "^0.0.3"
+    "eslint-plugin-react": "^7.1.0"
   },
   "eslintConfig": {
     "parser": "babel-eslint",
     "extends": "airbnb",
     "env": {
+      "node": true,
       "mocha": true
     },
     "plugins": [
@@ -39,10 +59,8 @@
     "rules": {
       "mocha/no-exclusive-tests": "error",
       "mocha/no-skipped-tests": "error",
-      "mocha/no-identical-title": "error"
+      "mocha/no-identical-title": "error",
+      "no-console": "off"
     }
-  },
-  "dependencies": {
-    "dotenv": "^4.0.0"
   }
 }
