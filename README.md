@@ -1,8 +1,6 @@
-# Lava Contract & Oracle
+# Lava Contract, Oracle, & dApp
 
-Contract to register a SIM and manager your data usage. Data usage is paid for by having ether in the contract.
-
-Oracle to listen to lava contract events and interact with Twilio's wireless service.
+Register a LAVA SIM and start managing and purchasing mobile data with ethereum.
 
 
 ## Requirements
@@ -39,7 +37,7 @@ $ yarn lint
 ### Start Oracle
 
 ```shell
-$ yarn start
+$ yarn start-oracle
 ```
 
 
@@ -68,11 +66,4 @@ $ yarn deploy-rinkeby
 
 ```shell
 $ yarn deploy
-```
-
-
-### To Import Compiled Lava Contract into a dApp
-
-```shell
-$ yarn add git+https://git@github.com/lmnop/lava.git
 ```

@@ -11,6 +11,7 @@
     "start-oracle": "node oracle/index.js",
     "start-dapp": "cd dapp && yarn start",
     "build-dapp": "cd dapp && yarn build",
+    "deploy-dapp": "cd dapp && yarn deploy",
     "compile": "truffle compile",
     "deploy-dev": "truffle migrate --network development",
     "deploy-rinkeby": "truffle migrate --network rinkeby",
