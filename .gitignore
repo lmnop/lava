@@ -28,3 +28,8 @@ node_modules
 
 # Environment Variables
 .env
+
+#dApp
+dapp/build
+dapp/.DS_Store
+dapp/node_modules
