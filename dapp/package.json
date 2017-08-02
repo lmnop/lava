@@ -6,7 +6,6 @@
     "node": ">=8.0.0",
     "npm": ">=5.0.0"
   },
-  "homepage": "https://lmnop.github.io/lava-dapp",
   "dependencies": {
     "bip39": "^2.3.1",
     "react": "^15.6.1",
