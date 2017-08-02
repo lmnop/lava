@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Button, Text, TextInput } from 'react-native';
 import bip39 from 'bip39';
 import HDWalletProvider from 'truffle-hdwallet-provider';
-import Web3 from 'web3';
 
 import { Colors } from './constants';
 
@@ -20,7 +19,7 @@ class App extends Component {
 
   createHDWallet(mnemonic) {
     this.provider = new HDWalletProvider(mnemonic, 'https://rinkeby.infura.io/sRC4zPiAwdx1VP1Zi1jq');
-    this.web3 = new Web3(this.provider);
+    //this.web3 = new Web3(this.provider);
 
     this.setState({
       address: this.provider.address,

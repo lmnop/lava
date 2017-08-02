@@ -6,6 +6,7 @@
     "node": ">=8.0.0",
     "npm": ">=5.0.0"
   },
+  "homepage": "https://lmnop.github.io/lava-dapp",
   "dependencies": {
     "bip39": "^2.3.1",
     "react": "^15.6.1",
@@ -13,10 +14,11 @@
     "react-native-web": "^0.0.119",
     "react-scripts": "1.0.10",
     "truffle-contract": "^2.0.5",
-    "truffle-hdwallet-provider": "^0.0.3",
-    "web3": "^1.0.0-beta.13"
+    "truffle-hdwallet-provider": "^0.0.3"
   },
   "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "deploy": "sh deploy.sh",
     "start": "react-scripts start",
     "build": "react-scripts build"
   }
