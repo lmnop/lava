@@ -16,9 +16,11 @@
     "truffle-hdwallet-provider": "^0.0.3"
   },
   "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
-    "deploy": "sh deploy.sh",
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "deploy": "gh-pages -d build -b master -r https://github.com/lmnop/lava-dapp.git"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.0.0"
   }
 }
