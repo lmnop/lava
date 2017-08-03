@@ -8,10 +8,18 @@
   },
   "dependencies": {
     "bip39": "^2.3.1",
+    "contracts": "file:../build/contracts",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1",
+    "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-native-web": "^0.0.119",
+    "react-redux": "^5.0.5",
     "react-scripts": "1.0.10",
+    "redux": "^3.7.2",
+    "redux-persist": "^4.8.3",
+    "redux-thunk": "^2.2.0",
     "truffle-contract": "^2.0.5",
     "truffle-hdwallet-provider": "^0.0.3"
   },
