@@ -1,8 +1,0 @@
-{
-  "contract_name": "DataMath",
-  "abi": [],
-  "unlinked_binary": "0x60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a7230582045fb2ab96e2def3cc244bd0333a7187a3645e09b9c1f54ae9de001f29909e1850029",
-  "networks": {},
-  "schema_version": "0.0.5",
-  "updated_at": 1501129442191
-}

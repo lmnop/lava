@@ -1,10 +1,10 @@
 pragma solidity ^0.4.11;
 
-import './SafeMath.sol';
+import './SafeMathLib.sol';
 
 
-library DataMath {
-    using SafeMath for uint;
+library DataMathLib {
+    using SafeMathLib for uint;
 
     function paymentToData(uint conversion, uint payment) internal returns (int) {
         return int(payment.div(conversion));

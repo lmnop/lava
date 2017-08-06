@@ -2,11 +2,11 @@ pragma solidity ^0.4.11;
 
 import './Ownable.sol';
 import './HasUsers.sol';
-import './DataMath.sol';
+import './DataMathLib.sol';
 
 
 contract Lava is Ownable, HasUsers {
-    using DataMath for uint;
+    using DataMathLib for uint;
 
     uint public activationFee = 0.04 ether; // fee to register & activate SIM
     uint public minimumBalance = 0.04 ether; // balance needed on account to keep SIM active
