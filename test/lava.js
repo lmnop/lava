@@ -5,14 +5,14 @@ const Lava = artifacts.require('./Lava.sol');
 const fixture = {
   activationFee: 40000000000000000,
   minimumBalance: 40000000000000000,
-  etherPerByte: 2000000000000,
-  lastPrice: 2000000000000,
-  lowestPrice: 2000000000000,
-  highestPrice: 2000000000000,
+  etherPerByte: 10000000,
+  lastPrice: 10000000,
+  lowestPrice: 10000000,
+  highestPrice: 10000000,
   SIM: '1234567890123456789',
   SIM2: '1234567890123456780',
   badSIM: '0000000000000000000',
-  data: 1000000,
+  data: 1000000000,
 };
 
 contract('Lava', (accounts) => {
@@ -214,7 +214,7 @@ contract('Lava', (accounts) => {
     it('should register new SIM with the same user and extra payment', async () => {
       await contract.register(fixture.hexSIM2, {
         from: accounts[0],
-        value: fixture.minimumBalance + fixture.activationFee + 2000000000000,
+        value: fixture.minimumBalance + fixture.activationFee + fixture.etherPerByte,
       });
 
       const isSIM = await contract.isSIM(fixture.hexSIM2);
@@ -272,7 +272,7 @@ contract('Lava', (accounts) => {
     it('should deposit eth into user account', async () => {
       await contract.deposit({
         from: accounts[0],
-        value: fixture.minimumBalance,
+        value: fixture.minimumBalance * 2,
       });
 
       const user = await contract.getUser({
@@ -281,7 +281,7 @@ contract('Lava', (accounts) => {
 
       const userBalance = user[0].toNumber();
 
-      assert.equal(userBalance, (fixture.minimumBalance * 3));
+      assert.equal(userBalance, (fixture.minimumBalance * 4));
 
       return Promise.resolve();
     });
@@ -308,7 +308,7 @@ contract('Lava', (accounts) => {
       let error;
 
       try {
-        await contract.withdraw(fixture.minimumBalance * 4);
+        await contract.withdraw(fixture.minimumBalance * 5);
       } catch (err) {
         error = err;
       }
@@ -327,7 +327,7 @@ contract('Lava', (accounts) => {
 
       const userBalance = user[0].toNumber();
 
-      assert.equal(userBalance, (fixture.minimumBalance * 2));
+      assert.equal(userBalance, (fixture.minimumBalance * 3));
 
       return Promise.resolve();
     });
@@ -462,7 +462,7 @@ contract('Lava', (accounts) => {
       let error;
 
       try {
-        await contract.sellData(1000, {
+        await contract.sellData(fixture.data, {
           from: accounts[1],
         });
       } catch (err) {
@@ -576,7 +576,13 @@ contract('Lava', (accounts) => {
     });
 
     it('should set pending status if user balance drops below minimum', async () => {
-      await contract.collect(fixture.data * 2, fixture.hexSIM);
+      const userBalance = (await contract.getUser({
+        from: accounts[0],
+      }))[0].toNumber();
+
+      const SIMdataPaid = (await contract.getSIM(fixture.hexSIM))[1].toNumber();
+
+      await contract.collect((userBalance / fixture.etherPerByte) + SIMdataPaid, fixture.hexSIM);
 
       await (() => {
         const deactivateSIM = contract.LogDeactivateSIM();
@@ -604,7 +610,7 @@ contract('Lava', (accounts) => {
 
       assert.equal(balance, 0);
       assert.equal(data, 0);
-      assert.ok(dataPaid < dataConsumed);
+      assert.equal(dataPaid, dataConsumed);
       assert.ok(updateStatus);
 
       return Promise.resolve();

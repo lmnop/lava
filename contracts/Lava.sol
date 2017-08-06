@@ -10,11 +10,13 @@ contract Lava is Ownable, HasUsers {
 
     uint public activationFee = 0.04 ether; // fee to register & activate SIM
     uint public minimumBalance = 0.04 ether; // balance needed on account to keep SIM active
-    uint public etherPerByte = 0.000002 ether; // eth cost per byte of data
 
-    uint public lastPrice = 0.000002 ether; // last etherPerByte price
-    uint public lowestPrice = 0.000002 ether; // historically lowest etherPerByte price
-    uint public highestPrice = 0.000002 ether; // historically highest etherPerByte price
+    // 1000000000 bytes per gigabyte
+    uint public etherPerByte = 0.00000000001 ether; // eth cost per byte of data
+
+    uint public lastPrice = 0.00000000001 ether; // last etherPerByte price
+    uint public lowestPrice = 0.00000000001 ether; // historically lowest etherPerByte price
+    uint public highestPrice = 0.00000000001 ether; // historically highest etherPerByte price
 
     event LogActivateSIM(address user, bytes32 sim);
     event LogDeactivateSIM(address user, bytes32 sim);
