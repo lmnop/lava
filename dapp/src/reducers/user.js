@@ -1,6 +1,7 @@
 import { Actions } from '../constants';
 
 const initialState = {
+  mnemonic: null,
   address: null,
   balance: 0,
   contract: {

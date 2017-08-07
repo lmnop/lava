@@ -1,8 +1,8 @@
 import { Actions } from '../constants';
 
 const initialState = {
-  loading: false,
-  error: '',
+  loading: null,
+  error: {},
 };
 
 export default function reducer(state = initialState, action) {
@@ -16,7 +16,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         loading: action.payload,
-        error: '',
+        error: {},
       };
     }
 
@@ -26,7 +26,7 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         error: action.payload,
-        loading: false,
+        loading: '',
       };
     }
 

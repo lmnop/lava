@@ -5,12 +5,18 @@ import _ from 'lodash';
 
 import Box from './Box';
 import Link from './Link';
+import RegisterSIM from './RegisterSIM';
 
 import { Colors } from '../constants';
 
 import * as userActions from '../actions/user';
 
 class Dashboard extends Component {
+
+  componentWillMount() {
+    this.props.getLavaContract();
+  }
+
   render() {
     const user = this.props.user;
     const contract = this.props.contract;
@@ -30,11 +36,6 @@ class Dashboard extends Component {
 
     return (
       <View style={styles.container}>
-        <Button
-          title="Clear Browser Cache"
-          color={Colors.red}
-          onPress={this.props.resetApp}
-        />
         <Box
           header="Your Ethereum Wallet"
         >
@@ -47,6 +48,7 @@ class Dashboard extends Component {
             {`${user.balance} ether`}
           </Text>
         </Box>
+        <RegisterSIM />
         <Box
           header="Lava Contract"
         >
@@ -76,6 +78,13 @@ class Dashboard extends Component {
             {renderParameters}
           </View>
         </Box>
+        <View style={styles.clear}>
+          <Button
+            title="Clear Browser Cache"
+            color={Colors.red}
+            onPress={this.props.resetApp}
+          />
+        </View>
       </View>
     );
   }
@@ -133,6 +142,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.green,
   },
+  clear: {
+    marginTop: 20,
+  },
 });
 
 const bindStore = (state) => {
@@ -143,6 +155,7 @@ const bindStore = (state) => {
 };
 
 const bindActions = dispatch => ({
+  getLavaContract: () => dispatch(userActions.getLavaContract()),
   resetApp: () => dispatch(userActions.resetApp()),
 });
 

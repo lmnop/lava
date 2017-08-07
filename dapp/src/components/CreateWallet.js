@@ -148,8 +148,14 @@ const styles = StyleSheet.create({
   },
 });
 
+const bindStore = (state) => {
+  return {
+    loading: state.loading,
+  };
+};
+
 const bindActions = dispatch => ({
   useWallet: (mnemonic) => dispatch(userActions.useWallet(mnemonic)),
 });
 
-export default connect(null, bindActions)(CreateWallet);
+export default connect(bindStore, bindActions)(CreateWallet);

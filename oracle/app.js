@@ -4,6 +4,9 @@ import convert from 'koa-convert';
 import json from 'koa-json';
 import bodyparser from 'koa-bodyparser';
 import cors from 'koa-cors';
+import _ from 'lodash';
+
+import * as twilio from './twilio';
 
 const app = new Koa();
 const router = require('koa-router')();
@@ -21,6 +24,26 @@ app.use(co.wrap(async (ctx, next) => {
 
 router.get('/', async (ctx) => {
   ctx.body = `Lava Oracle ${process.env.npm_package_version}`;
+});
+
+router.get('/sim/iccid/:iccid', async (ctx) => {
+  try {
+    const iccid = ctx.params.iccid;
+
+    const SIM = await twilio.getSIMByIccid(iccid);
+
+    if (!SIM) {
+      throw new Error();
+    }
+
+    ctx.status = 200;
+    ctx.body = SIM;
+  } catch (err) {
+    ctx.status = 500;
+    ctx.body = {
+      error: 'failed to get sim',
+    };
+  }
 });
 
 app.use(router.routes(), router.allowedMethods());

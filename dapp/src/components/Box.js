@@ -12,7 +12,7 @@ function renderFooter(text) {
     );
   }
 
-  return null;
+  return <View style={styles.blank} />;
 }
 
 function Box(props) {
@@ -55,12 +55,18 @@ const styles = StyleSheet.create({
   footer: {
     padding: 10,
     zIndex: 10,
+    lineHeight: 16,
     fontSize: 14,
     fontWeight: '700',
     marginTop: -20,
     backgroundColor: Colors.white,
     color: Colors.red,
   },
+  blank: {
+    height: 36,
+    zIndex: 10,
+    marginTop: -20,
+  }
 });
 
 export default Box;

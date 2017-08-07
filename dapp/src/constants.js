@@ -21,3 +21,7 @@ export const Actions = {
   /* Contract */
   CONTRACT_SET: 'CONTRACT_SET',
 };
+
+export const Routes = {
+  GET_SIM_ICCID: '/sim/iccid/',
+};

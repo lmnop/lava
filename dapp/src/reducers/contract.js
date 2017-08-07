@@ -3,12 +3,14 @@ import { Actions } from '../constants';
 const initialState = {
   owner: '',
   balance: 0,
+  balanceEther: 0,
   activationFee: 0,
   minimumBalance: 0,
   etherPerByte: 0,
   lastPrice: 0,
   lowestPrice: 0,
   highestPrice: 0,
+  parameters: {},
 };
 
 export default function reducer(state = initialState, action) {

@@ -1,45 +1,11 @@
-import twilio from 'twilio';
-
+import fetch from 'node-fetch';
 import config from '../config';
 
-const client = new twilio(config.twilio.sid, config.twilio.token);
+export const getSIMByIccid = async (iccid) => {
+  const url = `https://${config.twilio.sid}:${config.twilio.token}@wireless.twilio.com/v1/`;
 
-export const getSIMs = () => new Promse((resolve, reject) => {
-  client.preview.wireless.sims
-    .list()
-    .then((response, error) => {
-      if (error) {
-        return reject('failed to get SIMs');
-      }
+  const response = await fetch(`${url}Sims?Iccid=${iccid}`);
+  const result = await response.json();
 
-      return resolve(response);
-    });
-});
-
-export const getSIM = (SIM) => new Promse((resolve, reject) => {
-  client.preview.wireless
-    .sims(SIM)
-    .fetch()
-    .then((response, error) => {
-      if (error) {
-        return reject('failed to get SIM');
-      }
-
-      return resolve(response);
-    });
-});
-
-export const getSIMUsage = (SIM) => new Promse((resolve, reject) => {
-  client.preview.wireless
-    .sims(SIM)
-    .usage()
-    .fetch()
-    .then((response, error) => {
-      if (error) {
-        return reject('failed to get SIM usage');
-      }
-
-      return resolve(response);
-    });
-});
-
+  return result.sims[0];
+};
