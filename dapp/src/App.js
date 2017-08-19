@@ -7,7 +7,6 @@ import { persistStore } from 'redux-persist';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Router from './components/Router';
-import Loading from './components/Loading';
 
 import configureStore from './store';
 
@@ -19,7 +18,7 @@ class App extends Component {
     super();
 
     this.state = {
-      rehydrated: false,
+      loading: true,
     };
   }
 
@@ -28,22 +27,18 @@ class App extends Component {
       storage: AsyncStorage,
     }, () => {
       this.setState({
-        rehydrated: true,
+        loading: false,
       });
     });
   }
 
   render() {
-    if (!this.state.rehydrated) {
-      return <Loading />;
-    }
-
     return (
       <Provider store={store}>
         <View style={styles.container}>
           <Header />
           <View style={styles.body}>
-            <Router />
+            <Router loading={this.state.loading} />
           </View>
           <Footer />
         </View>

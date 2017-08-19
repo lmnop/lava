@@ -24,4 +24,5 @@ export const Actions = {
 
 export const Routes = {
   GET_SIM_ICCID: '/sim/iccid/',
+  GET_SIM_SID: '/sim/sid/',
 };

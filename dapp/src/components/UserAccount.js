@@ -10,14 +10,12 @@ import { Colors } from '../constants';
 
 import * as userActions from '../actions/user';
 
-class RegisterSIM extends Component {
+class UserAccount extends Component {
 
   constructor(props) {
     super(props);
 
-    this.state = {
-      iccid: '',
-    };
+    this.state = {};
   }
 
   renderContent() {
@@ -31,53 +29,7 @@ class RegisterSIM extends Component {
 
     return (
       <View style={styles.container}>
-        <TextInput
-          style={styles.inputSIM}
-          onChangeText={(iccid) => {
-            if (iccid.length <= 19) {
-              this.setState({iccid});
-            }
-          }}
-          value={this.state.iccid}
-          placeholder="SIM ICCID"
-          keyboardType="numeric"
-        />
-        <View style={styles.statsRow}>
-          <Text style={styles.statsTitle}>
-            Activation Fee
-          </Text>
-          <Text style={styles.statsValue}>
-            {`${this.props.activationFee} ether`}
-          </Text>
-        </View>
-        <View style={styles.statsRow}>
-          <Text style={styles.statsTitle}>
-            Minimum Balance
-          </Text>
-          <Text style={styles.statsValue}>
-            {`${this.props.minimumBalance} ether`}
-          </Text>
-        </View>
-        <View style={styles.totalRow}>
-          <Text style={styles.totalTitle}>
-            Total
-          </Text>
-          <Text style={styles.totalValue}>
-            {`${parseFloat(this.props.minimumBalance) + parseFloat(this.props.activationFee)} ether`}
-          </Text>
-        </View>
-        <Button
-          title="Register"
-          color={Colors.green}
-          disabled={this.state.iccid.length !== 19}
-          onPress={() => {
-            this.props.registerSIM(this.state.iccid);
 
-            this.setState({
-              iccid: '',
-            });
-          }}
-        />
       </View>
     );
   }
@@ -85,8 +37,7 @@ class RegisterSIM extends Component {
   render() {
     return (
       <Box
-        header="Register New SIM"
-        footer={this.props.error}
+        header="User Account"
       >
         {this.renderContent()}
       </Box>
@@ -166,4 +117,4 @@ const bindActions = dispatch => ({
   registerSIM: (iccid) => dispatch(userActions.registerSIM(iccid)),
 });
 
-export default connect(bindStore, bindActions)(RegisterSIM);
+export default connect(bindStore, bindActions)(UserAccount);

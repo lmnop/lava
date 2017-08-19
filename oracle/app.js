@@ -46,6 +46,26 @@ router.get('/sim/iccid/:iccid', async (ctx) => {
   }
 });
 
+router.get('/sim/sid/:sid', async (ctx) => {
+  try {
+    const sid = ctx.params.sid;
+
+    const SIM = await twilio.getSIM(sid);
+
+    if (!SIM) {
+      throw new Error();
+    }
+
+    ctx.status = 200;
+    ctx.body = SIM;
+  } catch (err) {
+    ctx.status = 500;
+    ctx.body = {
+      error: 'failed to get sim',
+    };
+  }
+});
+
 app.use(router.routes(), router.allowedMethods());
 
 app.on('error', (err, ctx) => {

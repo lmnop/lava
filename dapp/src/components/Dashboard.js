@@ -5,7 +5,9 @@ import _ from 'lodash';
 
 import Box from './Box';
 import Link from './Link';
+import Loading from './Loading';
 import RegisterSIM from './RegisterSIM';
+import UserAccount from './UserAccount';
 
 import { Colors } from '../constants';
 
@@ -20,6 +22,10 @@ class Dashboard extends Component {
   render() {
     const user = this.props.user;
     const contract = this.props.contract;
+
+    if (this.props.loading) {
+      return <Loading />;
+    }
 
     const renderParameters = _.map(contract.parameters, (parameter) => {
       return (
@@ -48,6 +54,7 @@ class Dashboard extends Component {
             {`${user.balance} ether`}
           </Text>
         </Box>
+        <UserAccount />
         <RegisterSIM />
         <Box
           header="Lava Contract"
@@ -151,6 +158,8 @@ const bindStore = (state) => {
   return {
     user: state.user,
     contract: state.contract,
+    loading: state.app.loading === 'getLavaContract' ? true : false,
+    error: state.app.error.action === 'getLavaContract' ? state.app.error.message : '',
   };
 };
 

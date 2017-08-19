@@ -31,4 +31,5 @@ const makeRequest = async (method, url, body) => {
 };
 
 export const getSIMByICCID = async (iccid) => makeRequest('GET', `${Routes.GET_SIM_ICCID}${iccid}`);
+export const getSIMBySID = async (sid) => makeRequest('GET', `${Routes.GET_SIM_SID}${sid}`);
 

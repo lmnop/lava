@@ -31,6 +31,7 @@ const getUserContract = async (address, web3, lava) => {
 
   const userBalance = user[0].toNumber();
   const userData = user[1].toNumber();
+
   const userSIMs = _.map(user[2], (hexSIM) => {
     return web3.toAscii(hexSIM).replace(/\0/g, '');
   });
@@ -39,25 +40,26 @@ const getUserContract = async (address, web3, lava) => {
     return lava.getSIM(hexSIM);
   });
 
-  let SIMs = await Promise.all(getUserSIMs);
-
-  SIMs = _.map(SIMs, (SIM, i) => {
-    return {
-      hex: user[2][i],
-      sid: userSIMs[i],
-      dataPaid: SIM[1].toNumber(),
-      dataConsumed: SIM[2].toNumber(),
-      isActivated: SIM[3],
-      updateStatus: SIM[4],
-    };
+  const getSIMs = _.map(userSIMs, (iccid) => {
+    return oracle.getSIMByICCID(iccid);
   });
 
-  // todo: can cycle through and grab other info about the SIM from Twilio
+  const contractSIMs = await Promise.all(getUserSIMs);
+  const twilioSIMs = await Promise.all(getSIMs);
 
   return {
     balance: userBalance,
     data: userData,
-    SIMs,
+    SIMs: _.map(contractSIMs, (SIM, i) => {
+      return {
+        hex: user[2][i],
+        dataPaid: SIM[1].toNumber(),
+        dataConsumed: SIM[2].toNumber(),
+        isActivated: SIM[3],
+        updateStatus: SIM[4],
+        twilio: twilioSIMs[i],
+      };
+    }),
   };
 };
 
@@ -166,8 +168,6 @@ export const getLavaContract = () => async (dispatch, getState) => {
 
     if (isUser) {
       userContract = await getUserContract(address, web3, lava);
-
-      console.log(userContract);
     }
 
     dispatch({
@@ -205,7 +205,7 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
-    const simHex = web3.fromAscii(SIM.sid).padEnd(66, 0);
+    const simHex = web3.fromAscii(SIM.iccid).padEnd(66, 0);
 
     const isSIM = await lava.isSIM(simHex);
 
@@ -240,6 +240,8 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
         return resolve(value);
       });
     });
+
+    console.log(userContract);
 
     dispatch({
       type: Actions.USER_SET,

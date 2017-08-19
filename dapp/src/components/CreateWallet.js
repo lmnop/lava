@@ -3,6 +3,8 @@ import { StyleSheet, View, Button, Text, TextInput } from 'react-native';
 import bip39 from 'bip39';
 import { connect } from 'react-redux';
 
+import Loading from './Loading';
+
 import { Colors } from '../constants';
 
 import * as userActions from '../actions/user';
@@ -39,6 +41,10 @@ class CreateWallet extends Component {
   }
 
   render() {
+    if (this.props.loading) {
+      return <Loading />;
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.box}>
@@ -150,7 +156,8 @@ const styles = StyleSheet.create({
 
 const bindStore = (state) => {
   return {
-    loading: state.loading,
+    loading: state.app.loading === 'useWallet' ? true : false,
+    error: state.app.error.action === 'useWallet' ? state.app.error.message : '',
   };
 };
 
