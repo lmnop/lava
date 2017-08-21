@@ -8,6 +8,7 @@ import Link from './Link';
 import Loading from './Loading';
 import RegisterSIM from './RegisterSIM';
 import UserAccount from './UserAccount';
+import PurchaseData from './PurchaseData';
 
 import { Colors } from '../constants';
 
@@ -17,6 +18,22 @@ class Dashboard extends Component {
 
   componentWillMount() {
     this.props.getLavaContract();
+  }
+
+  renderUserAccount() {
+    if (_.isEmpty(this.props.user.contract.SIMs)) {
+      return null;
+    }
+
+    return <UserAccount />;
+  }
+
+  renderPurchaseData() {
+    if (_.isEmpty(this.props.user.contract.SIMs)) {
+      return null;
+    }
+
+    return <PurchaseData />;
   }
 
   render() {
@@ -54,7 +71,8 @@ class Dashboard extends Component {
             {`${user.balance} ether`}
           </Text>
         </Box>
-        <UserAccount />
+        {this.renderUserAccount()}
+        {this.renderPurchaseData()}
         <RegisterSIM />
         <Box
           header="Lava Contract"
@@ -139,7 +157,7 @@ const styles = StyleSheet.create({
   },
   statsTitle: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 14,
     color: Colors.black,
     textAlign: 'right',
     paddingRight: 10,

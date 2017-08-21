@@ -1,120 +1,61 @@
-import React, { Component } from 'react';
-import { StyleSheet, Button, TextInput, View, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import Box from './Box';
-import Loading from './Loading';
 
 import { Colors } from '../constants';
 
-import * as userActions from '../actions/user';
-
-class UserAccount extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {};
-  }
-
-  renderContent() {
-    if (this.props.loading) {
-      return (
-        <View style={styles.container}>
-          <Loading />
-        </View>
-      );
-    }
-
-    return (
+function UserAccount(props) {
+  return (
+    <Box
+      header="User Account"
+    >
       <View style={styles.container}>
-
+        <Text style={styles.title}>
+          Contract Balance
+        </Text>
+        <Text style={styles.balance}>
+          {`${props.user.contract.blanceEther} ether`}
+        </Text>
+        <Text style={styles.title}>
+          Available Data
+        </Text>
+        <Text style={styles.balance}>
+          {`${props.user.contract.data / 1000000000} GB`}
+        </Text>
       </View>
-    );
-  }
-
-  render() {
-    return (
-      <Box
-        header="User Account"
-      >
-        {this.renderContent()}
-      </Box>
-    );
-  }
+    </Box>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: 180,
-  },
-  inputSIM: {
-    margin: 10,
+    height: 120,
+    alignSelf: 'stretch',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: Colors.grey,
-    borderWidth: 2,
-    padding: 10,
-  },
-  statsRow: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    alignContent: 'space-between',
   },
-  statsTitle: {
-    flex: 1,
-    fontSize: 12,
-    color: Colors.black,
-    textAlign: 'right',
-    paddingRight: 10,
-  },
-  statsValue: {
-    flex: 1,
-    fontSize: 14,
-    color: Colors.red,
-  },
-  totalRow: {
-    marginTop: 5,
-    paddingTop: 5,
-    marginBottom: 20,
-    borderTopColor: Colors.black,
-    borderTopWidth: 1,
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    alignContent: 'space-between',
-  },
-  totalTitle: {
-    flex: 1,
+  title: {
+    marginTop: 10,
     fontSize: 12,
     fontWeight: '700',
     color: Colors.black,
-    textAlign: 'right',
-    paddingRight: 10,
   },
-  totalValue: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '700',
-    color: Colors.red,
+  balance: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: '400',
+    color: Colors.green,
   },
 });
 
 const bindStore = (state) => {
   return {
-    activationFee: _.get(state.contract.parameters, 'activationFeeEther.value', 0),
-    minimumBalance: _.get(state.contract.parameters, 'minimumBalanceEther.value', 0),
-    loading: state.app.loading === 'registerSIM' ? true : false,
-    error: state.app.error.action === 'registerSIM' ? state.app.error.message : '',
+    user: state.user,
   };
 };
 
-const bindActions = dispatch => ({
-  registerSIM: (iccid) => dispatch(userActions.registerSIM(iccid)),
-});
-
-export default connect(bindStore, bindActions)(UserAccount);
+export default connect(bindStore)(UserAccount);

@@ -49,6 +49,7 @@ const getUserContract = async (address, web3, lava) => {
 
   return {
     balance: userBalance,
+    blanceEther: web3.fromWei(userBalance, 'ether'),
     data: userData,
     SIMs: _.map(contractSIMs, (SIM, i) => {
       return {
@@ -241,8 +242,6 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
       });
     });
 
-    console.log(userContract);
-
     dispatch({
       type: Actions.USER_SET,
       payload: {
@@ -265,3 +264,61 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
   }
 };
 
+export const purchaseData = (data) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Actions.APP_LOADING,
+      payload: 'purchaseData',
+    });
+
+    const state = getState();
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    const puchasedInEther = parseFloat(state.contract.parameters.etherPerGBEther.value) * parseFloat(data);
+    const purchasedInWei = web3.toWei(puchasedInEther, 'ether');
+
+    let addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    if (addressBalance < purchasedInWei) {
+      throw new Error('insufficient balance');
+    }
+
+    await lava.purchaseData({
+      from: state.user.address,
+      value: purchasedInWei,
+    });
+
+    const userContract = await getUserContract(state.user.address, web3, lava);
+
+    addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    dispatch({
+      type: Actions.USER_SET,
+      payload: {
+        balance: web3.fromWei(addressBalance, 'ether'),
+        contract: userContract,
+      },
+    });
+
+    dispatch({
+      type: Actions.APP_LOADING,
+    });
+  } catch (err) {
+    dispatch({
+      type: Actions.APP_ERROR,
+      payload: {
+        action: 'purchaseData',
+        message: err.message || 'failed',
+      },
+    });
+  }
+};

@@ -10,13 +10,13 @@ import { Colors } from '../constants';
 
 import * as userActions from '../actions/user';
 
-class RegisterSIM extends Component {
+class PurchaseData extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      iccid: '',
+      data: '',
     };
   }
 
@@ -33,29 +33,19 @@ class RegisterSIM extends Component {
       <View style={styles.container}>
         <TextInput
           style={styles.inputSIM}
-          onChangeText={(iccid) => {
-            if (iccid.length <= 19) {
-              this.setState({iccid});
-            }
+          onChangeText={(data) => {
+            this.setState({data});
           }}
-          value={this.state.iccid}
-          placeholder="SIM ICCID"
+          value={this.state.data}
+          placeholder="Data in GBs"
           keyboardType="numeric"
         />
         <View style={styles.statsRow}>
           <Text style={styles.statsTitle}>
-            Activation Fee
+            Ether Per GB
           </Text>
           <Text style={styles.statsValue}>
-            {`${this.props.activationFee} ether`}
-          </Text>
-        </View>
-        <View style={styles.statsRow}>
-          <Text style={styles.statsTitle}>
-            Minimum Balance
-          </Text>
-          <Text style={styles.statsValue}>
-            {`${this.props.minimumBalance} ether`}
+            {`${this.props.etherPerGB} ether`}
           </Text>
         </View>
         <View style={styles.totalRow}>
@@ -63,18 +53,18 @@ class RegisterSIM extends Component {
             Total
           </Text>
           <Text style={styles.totalValue}>
-            {`${parseFloat(this.props.minimumBalance) + parseFloat(this.props.activationFee)} ether`}
+            {`${parseFloat(this.props.etherPerGB) * parseFloat(this.state.data)} ether`}
           </Text>
         </View>
         <Button
-          title="Register"
+          title="Purchase"
           color={Colors.green}
-          disabled={this.state.iccid.length !== 19}
+          disabled={!this.state.data}
           onPress={() => {
-            this.props.registerSIM(this.state.iccid);
+            this.props.purchaseData(this.state.data);
 
             this.setState({
-              iccid: '',
+              data: '',
             });
           }}
         />
@@ -85,7 +75,7 @@ class RegisterSIM extends Component {
   render() {
     return (
       <Box
-        header="Register New SIM"
+        header="Purchase Data"
         footer={this.props.error}
       >
         {this.renderContent()}
@@ -155,15 +145,14 @@ const styles = StyleSheet.create({
 
 const bindStore = (state) => {
   return {
-    activationFee: _.get(state.contract.parameters, 'activationFeeEther.value', 0),
-    minimumBalance: _.get(state.contract.parameters, 'minimumBalanceEther.value', 0),
-    loading: state.app.loading === 'registerSIM' ? true : false,
-    error: state.app.error.action === 'registerSIM' ? state.app.error.message : '',
+    etherPerGB: _.get(state.contract.parameters, 'etherPerGBEther.value', 0),
+    loading: state.app.loading === 'purchaseData' ? true : false,
+    error: state.app.error.action === 'purchaseData' ? state.app.error.message : '',
   };
 };
 
 const bindActions = dispatch => ({
-  registerSIM: (iccid) => dispatch(userActions.registerSIM(iccid)),
+  purchaseData: (data) => dispatch(userActions.purchaseData(data)),
 });
 
-export default connect(bindStore, bindActions)(RegisterSIM);
+export default connect(bindStore, bindActions)(PurchaseData);
