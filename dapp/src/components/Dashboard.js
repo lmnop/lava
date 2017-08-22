@@ -11,6 +11,8 @@ import RegisterSIM from './RegisterSIM';
 import UserAccount from './UserAccount';
 import PurchaseData from './PurchaseData';
 import SellData from './SellData';
+import Deposit from './Deposit';
+import Withdraw from './Withdraw';
 
 import { Colors } from '../constants';
 
@@ -52,6 +54,22 @@ class Dashboard extends Component {
     return <SellData />;
   }
 
+  renderDeposit() {
+    if (_.isEmpty(this.props.user.contract.SIMs)) {
+      return null;
+    }
+
+    return <Deposit />;
+  }
+
+  renderWithdraw() {
+    if (_.isEmpty(this.props.user.contract.SIMs)) {
+      return null;
+    }
+
+    return <Withdraw />;
+  }
+
   render() {
     const user = this.props.user;
     const contract = this.props.contract;
@@ -90,6 +108,8 @@ class Dashboard extends Component {
         {this.renderUserAccount()}
         {this.renderPurchaseData()}
         {this.renderSellData()}
+        {this.renderDeposit()}
+        {this.renderWithdraw()}
         <RegisterSIM />
         <Box
           header="Lava Contract"

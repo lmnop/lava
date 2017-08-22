@@ -202,10 +202,14 @@ export const getLavaContract = () => async (dispatch, getState) => {
 
     setInterval(() => {
       web3.eth.getBlock('pending', true, (error, block) => {
-        const transaction = _.find(block.transactions, {
-          from: address,
-          to: lava.address,
-        });
+        let transaction;
+
+        if (block) {
+          transaction = _.find(block.transactions, {
+            from: address,
+            to: lava.address,
+          });
+        }
 
         dispatch({
           type: Actions.APP_PENDING,
@@ -311,6 +315,10 @@ export const purchaseData = (data) => async (dispatch, getState) => {
       payload: 'purchaseData',
     });
 
+    if (parseFloat(data) <= 0) {
+      throw new Error('need positive value');
+    }
+
     const state = getState();
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
@@ -348,11 +356,15 @@ export const sellData = (data) => async (dispatch, getState) => {
       payload: 'sellData',
     });
 
+    if (parseFloat(data) <= 0) {
+      throw new Error('need positive value');
+    }
+
     const state = getState();
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
-    const dataInBytes = data * 1000000000;
+    const dataInBytes = parseFloat(data) * 1000000000;
     const sellingInEther = parseFloat(state.contract.parameters.etherPerGBEther.value) * parseFloat(data);
     const sellingInWei = web3.toWei(sellingInEther, 'ether');
 
@@ -383,5 +395,88 @@ export const sellData = (data) => async (dispatch, getState) => {
     });
   } catch (err) {
     handleError(dispatch, err, 'sellData');
+  }
+};
+
+export const deposit = (amount) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Actions.APP_LOADING,
+      payload: 'deposit',
+    });
+
+    if (parseFloat(amount) <= 0) {
+      throw new Error('need positive value');
+    }
+
+    const state = getState();
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    const depositInWei = web3.toWei(amount, 'ether');
+
+    let gasEstimate = await lava.deposit.estimateGas({
+      from: state.user.address,
+    });
+
+    let addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    if (addressBalance < gasEstimate) {
+      throw new Error('insufficient balance');
+    }
+
+    await lava.deposit({
+      from: state.user.address,
+      value: depositInWei,
+    });
+  } catch (err) {
+    handleError(dispatch, err, 'deposit');
+  }
+};
+
+export const withdraw = (amount) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Actions.APP_LOADING,
+      payload: 'withdraw',
+    });
+
+    if (parseFloat(amount) <= 0) {
+      throw new Error('need positive value');
+    }
+
+    const state = getState();
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    const withdrawInWei = web3.toWei(amount, 'ether');
+
+    let gasEstimate = await lava.withdraw.estimateGas(withdrawInWei, {
+      from: state.user.address,
+    });
+
+    let addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    if (addressBalance < gasEstimate) {
+      throw new Error('insufficient balance');
+    }
+
+    if (state.user.contract.balance < withdrawInWei) {
+      throw new Error('insufficient contract balance');
+    }
+
+    await lava.withdraw(withdrawInWei, {
+      from: state.user.address,
+    });
+  } catch (err) {
+    handleError(dispatch, err, 'withdraw');
   }
 };

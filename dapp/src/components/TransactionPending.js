@@ -17,7 +17,7 @@ function TransactionPending(props) {
         />
         <View style={styles.inner}>
           <Text style={styles.text}>
-            PENDING TRANSACTION HASH
+            PENDING TRANSACTION
           </Text>
           <Link
             url={`https://rinkeby.etherscan.io/tx/${props.pending}`}
@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   address: {
     marginTop: 10,
     marginBottom: 10,
+    width: '80%',
   },
 });
 

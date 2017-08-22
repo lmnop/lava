@@ -52,10 +52,13 @@ contract HasUsers is HasSIMs {
     }
 
     function deposit() public payable senderMustBeUser {
+        require(msg.value > 0);
+
         users[msg.sender].balance += msg.value;
     }
 
     function withdraw(uint withdrawAmount) public senderMustBeUser {
+        require(withdrawAmount > 0);
         require(withdrawAmount <= users[msg.sender].balance);
 
         users[msg.sender].balance -= withdrawAmount;
