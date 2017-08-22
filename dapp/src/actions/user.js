@@ -8,6 +8,16 @@ import LavaJSON from 'lava-contract';
 import { Actions } from '../constants';
 import * as oracle from '../oracle';
 
+const handleError = (dispatch, err, action) => {
+  dispatch({
+    type: Actions.APP_ERROR,
+    payload: {
+      action,
+      message: err.message || 'failed',
+    },
+  });
+};
+
 const getEthereum = async (mnemonic) => {
   const provider = new HDWalletProvider(mnemonic, 'https://rinkeby.infura.io/sRC4zPiAwdx1VP1Zi1jq');
   const web3 = new Web3(provider);
@@ -64,6 +74,42 @@ const getUserContract = async (address, web3, lava) => {
   };
 };
 
+const getLavaContractDetails = async (web3, lava) => {
+  const owner = await lava.owner();
+  const balance = await lava.balance();
+  const activationFee = await lava.activationFee();
+  const minimumBalance = await lava.minimumBalance();
+  const etherPerByte = await lava.etherPerByte();
+
+  return {
+    address: lava.address,
+    owner,
+    balance,
+    balanceEther: web3.fromWei(balance, 'ether'),
+    activationFee,
+    minimumBalance,
+    etherPerByte,
+    parameters: {
+      activationFeeEther: {
+        name: 'Activate Fee',
+        value: web3.fromWei(activationFee, 'ether'),
+      },
+      minimumBalanceEther: {
+        name: 'Minimum Balance',
+        value: web3.fromWei(minimumBalance, 'ether'),
+      },
+      etherPerByteEther: {
+        name: 'Price Per Byte',
+        value: web3.fromWei(etherPerByte, 'ether'),
+      },
+      etherPerGBEther: {
+        name: 'Price Per GB',
+        value: web3.fromWei(etherPerByte, 'ether') * 1000000000,
+      },
+    },
+  };
+};
+
 export const resetApp = () => (dispatch) => {
   dispatch({
     type: Actions.APP_RESET,
@@ -93,13 +139,51 @@ export const useWallet = (mnemonic) => async (dispatch) => {
       type: Actions.APP_LOADING,
     });
   } catch (err) {
+    handleError(dispatch, err, 'useWallet');
+  }
+};
+
+export const refresh = () => async (dispatch, getState) => {
+  try {
     dispatch({
-      type: Actions.APP_ERROR,
+      type: Actions.APP_LOADING,
+      payload: 'refresh',
+    });
+
+    const state = getState();
+
+    const address = state.user.address;
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    const userContract = await getUserContract(address, web3, lava);
+
+    const addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    dispatch({
+      type: Actions.USER_SET,
       payload: {
-        action: 'useWallet',
-        message: err.message || 'failed',
+        balance: web3.fromWei(addressBalance, 'ether'),
+        contract: userContract,
       },
     });
+
+    const lavaDetails = await getLavaContractDetails(web3, lava);
+
+    dispatch({
+      type: Actions.CONTRACT_SET,
+      payload: lavaDetails,
+    });
+
+    dispatch({
+      type: Actions.APP_LOADING,
+    });
+  } catch (err) {
+    handleError(dispatch, err, 'refresh');
   }
 };
 
@@ -116,47 +200,31 @@ export const getLavaContract = () => async (dispatch, getState) => {
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
+    setInterval(() => {
+      web3.eth.getBlock('pending', true, (error, block) => {
+        const transaction = _.find(block.transactions, {
+          from: address,
+          to: lava.address,
+        });
+
+        dispatch({
+          type: Actions.APP_PENDING,
+          payload: transaction ? transaction.hash : null,
+        });
+      });
+    }, 1000);
+
     const addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(address, (error, value) => {
         return resolve(value);
       });
     });
 
-    const owner = await lava.owner();
-    const balance = await lava.balance();
-    const activationFee = await lava.activationFee();
-    const minimumBalance = await lava.minimumBalance();
-    const etherPerByte = await lava.etherPerByte();
+    const lavaDetails = await getLavaContractDetails(web3, lava);
 
     dispatch({
       type: Actions.CONTRACT_SET,
-      payload: {
-        address: lava.address,
-        owner,
-        balance,
-        balanceEther: web3.fromWei(balance, 'ether'),
-        activationFee,
-        minimumBalance,
-        etherPerByte,
-        parameters: {
-          activationFeeEther: {
-            name: 'Activate Fee',
-            value: web3.fromWei(activationFee, 'ether'),
-          },
-          minimumBalanceEther: {
-            name: 'Minimum Balance',
-            value: web3.fromWei(minimumBalance, 'ether'),
-          },
-          etherPerByteEther: {
-            name: 'Price Per Byte',
-            value: web3.fromWei(etherPerByte, 'ether'),
-          },
-          etherPerGBEther: {
-            name: 'Price Per GB',
-            value: web3.fromWei(etherPerByte, 'ether') * 1000000000,
-          },
-        },
-      },
+      payload: lavaDetails,
     });
 
     let userContract = {
@@ -183,13 +251,7 @@ export const getLavaContract = () => async (dispatch, getState) => {
       type: Actions.APP_LOADING,
     });
   } catch (err) {
-    dispatch({
-      type: Actions.APP_ERROR,
-      payload: {
-        action: 'getLavaContract',
-        message: err.message || 'failed',
-      },
-    });
+    handleError(dispatch, err, 'getLavaContract');
   }
 };
 
@@ -214,6 +276,10 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
       throw new Error('SIM already registered');
     }
 
+    let gasEstimate = await lava.purchaseData.register(simHex, {
+      from: state.user.address,
+    });
+
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
         return resolve(value);
@@ -225,7 +291,7 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
 
     const registerAmount = activationFee.toNumber() + minimumBalance.toNumber();
 
-    if (addressBalance < registerAmount) {
+    if (addressBalance < (registerAmount + gasEstimate)) {
       throw new Error('insufficient balance');
     }
 
@@ -233,34 +299,8 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
       from: state.user.address,
       value: registerAmount,
     });
-
-    const userContract = await getUserContract(state.user.address, web3, lava);
-
-    addressBalance = await new Promise((resolve, reject) => {
-      web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
-      });
-    });
-
-    dispatch({
-      type: Actions.USER_SET,
-      payload: {
-        balance: web3.fromWei(addressBalance, 'ether'),
-        contract: userContract,
-      },
-    });
-
-    dispatch({
-      type: Actions.APP_LOADING,
-    });
   } catch (err) {
-    dispatch({
-      type: Actions.APP_ERROR,
-      payload: {
-        action: 'registerSIM',
-        message: err.message || 'failed',
-      },
-    });
+    handleError(dispatch, err, 'registerSIM');
   }
 };
 
@@ -284,60 +324,20 @@ export const purchaseData = (data) => async (dispatch, getState) => {
       });
     });
 
-    if (addressBalance < purchasedInWei) {
+    let gasEstimate = await lava.purchaseData.estimateGas({
+      from: state.user.address,
+    });
+
+    if (addressBalance < (purchasedInWei + gasEstimate)) {
       throw new Error('insufficient balance');
     }
-
-    const transactionInterval = setInterval(() => {
-      web3.eth.getBlock('pending', true, (error, block) => {
-        const transaction = _.find(block.transactions, {
-          from: state.user.address,
-          to: lava.address
-        });
-
-        if (transaction) {
-          dispatch({
-            type: Actions.APP_PENDING,
-            payload: transaction.hash,
-          });
-        }
-      });
-    }, 1000);
 
     await lava.purchaseData({
       from: state.user.address,
       value: purchasedInWei,
     });
-
-    clearInterval(transactionInterval);
-
-    const userContract = await getUserContract(state.user.address, web3, lava);
-
-    addressBalance = await new Promise((resolve, reject) => {
-      web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
-      });
-    });
-
-    dispatch({
-      type: Actions.USER_SET,
-      payload: {
-        balance: web3.fromWei(addressBalance, 'ether'),
-        contract: userContract,
-      },
-    });
-
-    dispatch({
-      type: Actions.APP_LOADING,
-    });
   } catch (err) {
-    dispatch({
-      type: Actions.APP_ERROR,
-      payload: {
-        action: 'purchaseData',
-        message: err.message || 'failed',
-      },
-    });
+    handleError(dispatch, err, 'purchaseData');
   }
 };
 
@@ -352,7 +352,9 @@ export const sellData = (data) => async (dispatch, getState) => {
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
-    const dataInBytes = data / 1000000000;
+    const dataInBytes = data * 1000000000;
+    const sellingInEther = parseFloat(state.contract.parameters.etherPerGBEther.value) * parseFloat(data);
+    const sellingInWei = web3.toWei(sellingInEther, 'ether');
 
     let gasEstimate = await lava.sellData.estimateGas(dataInBytes, {
       from: state.user.address,
@@ -365,21 +367,21 @@ export const sellData = (data) => async (dispatch, getState) => {
     });
 
     if (addressBalance < gasEstimate) {
-
+      throw new Error('insufficient balance');
     }
 
-    console.log('GAS', gasEstimate);
+    if (state.contract.balance.toNumber() < sellingInWei) {
+      throw new Error('insufficient contract balance');
+    }
 
-    dispatch({
-      type: Actions.APP_LOADING,
+    if (state.user.contract.data < dataInBytes) {
+      throw new Error('insufficient data owned');
+    }
+
+    await lava.sellData(dataInBytes, {
+      from: state.user.address,
     });
   } catch (err) {
-    dispatch({
-      type: Actions.APP_ERROR,
-      payload: {
-        action: 'sellData',
-        message: err.message || 'failed',
-      },
-    });
+    handleError(dispatch, err, 'sellData');
   }
 };

@@ -21,7 +21,7 @@ class PurchaseData extends Component {
   }
 
   renderContent() {
-    if (this.props.loading) {
+    if (this.props.loading || this.props.pending) {
       return (
         <View style={styles.container}>
           <Loading />
@@ -148,6 +148,7 @@ const bindStore = (state) => {
     etherPerGB: _.get(state.contract.parameters, 'etherPerGBEther.value', 0),
     loading: state.app.loading === 'purchaseData' ? true : false,
     error: state.app.error.action === 'purchaseData' ? state.app.error.message : '',
+    pending: state.app.pending,
   };
 };
 

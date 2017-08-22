@@ -21,7 +21,7 @@ class RegisterSIM extends Component {
   }
 
   renderContent() {
-    if (this.props.loading) {
+    if (this.props.loading || this.props.pending) {
       return (
         <View style={styles.container}>
           <Loading />
@@ -159,6 +159,7 @@ const bindStore = (state) => {
     minimumBalance: _.get(state.contract.parameters, 'minimumBalanceEther.value', 0),
     loading: state.app.loading === 'registerSIM' ? true : false,
     error: state.app.error.action === 'registerSIM' ? state.app.error.message : '',
+    pending: state.app.pending,
   };
 };
 

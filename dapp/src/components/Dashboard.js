@@ -22,6 +22,12 @@ class Dashboard extends Component {
     this.props.getLavaContract();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.pending && !nextProps.pending && !nextProps.loading) {
+      this.props.refresh();
+    }
+  }
+
   renderUserAccount() {
     if (_.isEmpty(this.props.user.contract.SIMs)) {
       return null;
@@ -182,11 +188,13 @@ const styles = StyleSheet.create({
 });
 
 const bindStore = (state) => {
+  const isLoading = (state.app.loading === 'getLavaContract' || state.app.loading === 'refresh');
+
   return {
     user: state.user,
     contract: state.contract,
-    loading: state.app.loading === 'getLavaContract' ? true : false,
-    error: state.app.error.action === 'getLavaContract' ? state.app.error.message : '',
+    loading: isLoading,
+    error: isLoading ? state.app.error.message : '',
     pending: state.app.pending,
   };
 };
@@ -194,6 +202,7 @@ const bindStore = (state) => {
 const bindActions = dispatch => ({
   getLavaContract: () => dispatch(userActions.getLavaContract()),
   resetApp: () => dispatch(userActions.resetApp()),
+  refresh: () => dispatch(userActions.refresh()),
 });
 
 export default connect(bindStore, bindActions)(Dashboard);
