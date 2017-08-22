@@ -288,10 +288,28 @@ export const purchaseData = (data) => async (dispatch, getState) => {
       throw new Error('insufficient balance');
     }
 
+    const transactionInterval = setInterval(() => {
+      web3.eth.getBlock('pending', true, (error, block) => {
+        const transaction = _.find(block.transactions, {
+          from: state.user.address,
+          to: lava.address
+        });
+
+        if (transaction) {
+          dispatch({
+            type: Actions.APP_PENDING,
+            payload: transaction.hash,
+          });
+        }
+      });
+    }, 1000);
+
     await lava.purchaseData({
       from: state.user.address,
       value: purchasedInWei,
     });
+
+    clearInterval(transactionInterval);
 
     const userContract = await getUserContract(state.user.address, web3, lava);
 
@@ -317,6 +335,49 @@ export const purchaseData = (data) => async (dispatch, getState) => {
       type: Actions.APP_ERROR,
       payload: {
         action: 'purchaseData',
+        message: err.message || 'failed',
+      },
+    });
+  }
+};
+
+export const sellData = (data) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Actions.APP_LOADING,
+      payload: 'sellData',
+    });
+
+    const state = getState();
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    const dataInBytes = data / 1000000000;
+
+    let gasEstimate = await lava.sellData.estimateGas(dataInBytes, {
+      from: state.user.address,
+    });
+
+    let addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    if (addressBalance < gasEstimate) {
+
+    }
+
+    console.log('GAS', gasEstimate);
+
+    dispatch({
+      type: Actions.APP_LOADING,
+    });
+  } catch (err) {
+    dispatch({
+      type: Actions.APP_ERROR,
+      payload: {
+        action: 'sellData',
         message: err.message || 'failed',
       },
     });

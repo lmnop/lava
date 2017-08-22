@@ -3,6 +3,7 @@ import { Actions } from '../constants';
 const initialState = {
   loading: null,
   error: {},
+  pending: null,
 };
 
 export default function reducer(state = initialState, action) {
@@ -16,7 +17,8 @@ export default function reducer(state = initialState, action) {
       return {
         ...state,
         loading: action.payload,
-        error: {},
+        error: initialState.error,
+        pending: initialState.pending,
       };
     }
 
@@ -27,6 +29,13 @@ export default function reducer(state = initialState, action) {
         ...state,
         error: action.payload,
         loading: '',
+      };
+    }
+
+    case Actions.APP_PENDING: {
+      return {
+        ...state,
+        pending: action.payload,
       };
     }
 

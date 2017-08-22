@@ -7,6 +7,7 @@ export const Colors = {
   black: '#2E2E2E',
   white: '#FFFFFF',
   grey: '#CCCCCC',
+  darkGrey: '#BBBBBB',
 };
 
 export const Actions = {
@@ -14,6 +15,7 @@ export const Actions = {
   APP_LOADING: 'APP_LOADING',
   APP_ERROR: 'APP_ERROR',
   APP_RESET: 'APP_RESET',
+  APP_PENDING: 'APP_PENDING',
 
   /* User */
   USER_SET: 'USER_SET',
