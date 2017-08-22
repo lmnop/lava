@@ -20,7 +20,7 @@ const makeRequest = async (method, url, body) => {
     let baseUrl = 'http://localhost:5000';
 
     if (process.env.NODE_ENV === 'production') {
-      baseUrl = 'https://lava.lmnop.network';
+      baseUrl = 'https://api.lmnop.network';
     }
 
     const response = await fetch(`${baseUrl}${url}`, request);
