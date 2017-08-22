@@ -33,3 +33,4 @@ node_modules
 dapp/build
 dapp/.DS_Store
 dapp/node_modules
+dapp/.env

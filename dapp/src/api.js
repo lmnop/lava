@@ -6,13 +6,24 @@ const makeRequest = async (method, url, body) => {
   try {
     let request = {
       method,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Basic ${window.btoa(`${process.env.REACT_APP_API_USER}:${process.env.REACT_APP_API_PASS}`)}`,
+      },
     };
 
     if (body) {
       request.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`http://localhost:5000${url}`, request);
+    let baseUrl = 'http://localhost:5000';
+
+    if (process.env.NODE_ENV === 'production') {
+      baseUrl = 'https://lava.lmnop.network';
+    }
+
+    const response = await fetch(`${baseUrl}${url}`, request);
 
     let data = await response.json();
 
@@ -24,6 +35,7 @@ const makeRequest = async (method, url, body) => {
 
     return Promise.resolve(data);
   } catch (err) {
+    console.log(err);
     return Promise.reject({
       message: 'failed making request',
     });

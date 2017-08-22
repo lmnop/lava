@@ -6,7 +6,7 @@ import contract from 'truffle-contract';
 import LavaJSON from 'lava-contract';
 
 import { Actions } from '../constants';
-import * as oracle from '../oracle';
+import * as api from '../api';
 
 const handleError = (dispatch, err, action) => {
   dispatch({
@@ -19,7 +19,9 @@ const handleError = (dispatch, err, action) => {
 };
 
 const getEthereum = async (mnemonic) => {
-  const provider = new HDWalletProvider(mnemonic, 'https://rinkeby.infura.io/sRC4zPiAwdx1VP1Zi1jq');
+  let providerUrl = `https://rinkeby.infura.io/${process.env.REACT_APP_INFURA_TOKEN}`;
+
+  const provider = new HDWalletProvider(mnemonic, providerUrl);
   const web3 = new Web3(provider);
 
   const lavaContract = contract(LavaJSON);
@@ -51,7 +53,7 @@ const getUserContract = async (address, web3, lava) => {
   });
 
   const getSIMs = _.map(userSIMs, (iccid) => {
-    return oracle.getSIMByICCID(iccid);
+    return api.getSIMByICCID(iccid);
   });
 
   const contractSIMs = await Promise.all(getUserSIMs);
@@ -268,7 +270,7 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
 
     const state = getState();
 
-    const SIM = await oracle.getSIMByICCID(iccid);
+    const SIM = await api.getSIMByICCID(iccid);
 
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
