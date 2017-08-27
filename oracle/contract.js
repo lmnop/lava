@@ -7,21 +7,14 @@ import Lava from '../build/contracts/Lava.json';
 import config from '../config';
 
 const providerUrl = config[process.env.NODE_ENV].providerUrl;
+
+console.log('Connecting to', providerUrl);
+
 const provider = new HDWalletProvider(config.mnemonic, providerUrl);
 const lavaContract = contract(Lava);
 
 lavaContract.setProvider(provider);
 
-export const web3 = new Web3(provider);
+export const getWeb3 = () => new Web3(provider);
 
-export const getLavaContract = () => {
-  if (process.env.NODE_ENV === 'local') {
-    return lavaContract.new({
-      from: web3.eth.accounts[0],
-      gas: 4712388,
-    });
-  }
-
-  return lavaContract.deployed();
-};
-
+export const getLavaContract = () => lavaContract.deployed();
