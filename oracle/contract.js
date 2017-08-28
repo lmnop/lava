@@ -8,7 +8,9 @@ import config from '../config';
 
 const providerUrl = config[process.env.NODE_ENV].providerUrl;
 
-console.log('Connecting to', providerUrl);
+setInterval(() => {
+  console.log(`Oracle connected to ${providerUrl}`);
+}, 1000); // Every second
 
 const provider = new HDWalletProvider(config.mnemonic, providerUrl);
 const lavaContract = contract(Lava);

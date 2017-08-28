@@ -59,6 +59,8 @@ async function watch(web3, lava) {
 
 async function collectSIM(web3, lava, sim) {
   try {
+    console.log(`Checking on ${sim.iccid}`);
+
     const hexSIM = web3.utils.fromAscii(sim.iccid).padEnd(66, 0);
 
     const isSIM = await lava.isSIM(hexSIM);
@@ -73,6 +75,8 @@ async function collectSIM(web3, lava, sim) {
       const updateStatus = SIM[4];
 
       if (usage.total > dataPaid && sim.status === 'active') {
+        console.log(`Collecting from ${sim.iccid}`);
+
         await lava.collect(usage.total, hexSIM, {
           from: web3._requestManager.provider.address,
         });
@@ -110,6 +114,8 @@ async function collectSIM(web3, lava, sim) {
 async function collect(web3, lava, page) {
   try {
     const response = await twilio.getSIMs(page);
+
+    console.log(`Working through ${response.sims.length} SIMs`);
 
     for (let sim of response.sims) {
       await collectSIM(web3, lava, sim);
