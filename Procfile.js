@@ -1,1 +1,1 @@
-web: npm run start-oracle
+web: npm start

@@ -8,8 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "start-oracle": "NODE_ENV=rinkeby node oracle/index.js",
-    "start-oracle-production": "NODE_ENV=main node oracle/index.js",
+    "start": "node oracle/index.js",
     "start-dapp": "cd dapp && yarn start",
     "build-dapp": "cd dapp && yarn build",
     "deploy-dapp": "cd dapp && yarn deploy",
