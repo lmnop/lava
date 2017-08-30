@@ -282,7 +282,7 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
       throw new Error('SIM already registered');
     }
 
-    let gasEstimate = await lava.purchaseData.register(simHex, {
+    let gasEstimate = await lava.register.estimateGas(simHex, {
       from: state.user.address,
     });
 
@@ -480,5 +480,46 @@ export const withdraw = (amount) => async (dispatch, getState) => {
     });
   } catch (err) {
     handleError(dispatch, err, 'withdraw');
+  }
+};
+
+export const flipSIMStatus = (sim) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: Actions.APP_LOADING,
+      payload: 'flipSIMStatus',
+    });
+
+    const state = getState();
+
+    const { web3, lava } = await getEthereum(state.user.mnemonic);
+
+    let gasEstimate = await lava.flipSIMStatus.estimateGas(sim.hex, {
+      from: state.user.address,
+    });
+
+    let addressBalance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(state.user.address, (error, value) => {
+        return resolve(value);
+      });
+    });
+
+    const minimumBalance = await lava.minimumBalance();
+
+    if (addressBalance < gasEstimate) {
+      throw new Error('insufficient balance');
+    }
+
+    if (!sim.isActivated) {
+      if (state.user.contract.balance < minimumBalance.toNumber()) {
+        throw new Error('insufficient contract balance');
+      }
+    }
+
+    await lava.flipSIMStatus(sim.hex, {
+      from: state.user.address,
+    });
+  } catch (err) {
+    handleError(dispatch, err, 'flipSIMStatus');
   }
 };

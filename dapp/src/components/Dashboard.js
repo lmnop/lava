@@ -13,6 +13,7 @@ import PurchaseData from './PurchaseData';
 import SellData from './SellData';
 import Deposit from './Deposit';
 import Withdraw from './Withdraw';
+import SIM from './SIM';
 
 import { Colors } from '../constants';
 
@@ -70,6 +71,16 @@ class Dashboard extends Component {
     return <Withdraw />;
   }
 
+  renderSIMs() {
+    if (_.isEmpty(this.props.user.contract.SIMs)) {
+      return null;
+    }
+
+    return _.map(this.props.user.contract.SIMs, (sim) => {
+      return <SIM key={sim.hex} sim={sim} />;
+    });
+  }
+
   render() {
     const user = this.props.user;
     const contract = this.props.contract;
@@ -106,6 +117,7 @@ class Dashboard extends Component {
           </Text>
         </Box>
         {this.renderUserAccount()}
+        {this.renderSIMs()}
         {this.renderPurchaseData()}
         {this.renderSellData()}
         {this.renderDeposit()}
