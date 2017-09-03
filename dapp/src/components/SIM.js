@@ -45,13 +45,13 @@ class SIM extends Component {
           Data Consumed
         </Text>
         <Text style={styles.data}>
-          {parseFloat(this.props.sim.dataConsumed) / 1000} GB
+          {parseFloat(this.props.sim.dataConsumed) / 1000000000} GB
         </Text>
         <Text style={styles.title}>
           Data Paid
         </Text>
         <Text style={styles.data}>
-          {parseFloat(this.props.sim.dataPaid) / 1000} GB
+          {parseFloat(this.props.sim.dataPaid) / 1000000000} GB
         </Text>
         <Button
           title={isActive ? 'Deactivate' : 'Activate'}

@@ -8,7 +8,7 @@ module.exports = {
     token: process.env.TWILIO_TOKEN,
   },
   local: {
-    providerUrl: 'http://localhost:8545/',
+    providerUrl: 'http://localhost:8545',
   },
   rinkeby: {
     providerUrl: `https://rinkeby.infura.io/${process.env.INFURA_TOKEN}`,

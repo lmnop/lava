@@ -23,7 +23,12 @@ contract('Lava', (accounts) => {
     contract = await Lava.deployed();
     web3 = contract.constructor.web3;
 
-    fixture.balance = web3.eth.getBalance(accounts[0]).toNumber();
+    fixture.balance = await new Promise((resolve, reject) => {
+      web3.eth.getBalance(accounts[0], (error, value) => {
+        return resolve(value.toNumber());
+      });
+    });
+
     fixture.hexSIM = web3.fromAscii(fixture.SIM).padEnd(66, 0);
     fixture.hexSIM2 = web3.fromAscii(fixture.SIM2).padEnd(66, 0);
 
@@ -174,7 +179,12 @@ contract('Lava', (accounts) => {
       const dataConsumed = SIM[2].toNumber();
       const isActivated = SIM[3];
       const updateStatus = SIM[4];
-      const newBalance = web3.eth.getBalance(accounts[0]).toNumber();
+
+      const newBalance = await new Promise((resolve, reject) => {
+        web3.eth.getBalance(accounts[0], (error, value) => {
+          return resolve(value.toNumber());
+        });
+      });
 
       assert.equal(balance, fixture.activationFee);
       assert.ok(isUser);

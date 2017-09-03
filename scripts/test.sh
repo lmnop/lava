@@ -1,6 +1,6 @@
 #!/bin/bash
 
-testrpc &>/dev/null &
+testrpc -m "$MNEMONIC" &>/dev/null &
 PID1=$!
 truffle test
 kill $PID1

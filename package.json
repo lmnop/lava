@@ -27,6 +27,7 @@
     "babel-register": "^6.24.1",
     "dotenv": "^4.0.0",
     "lodash": "^4.17.4",
+    "mock-require": "^2.0.2",
     "moment": "^2.18.1",
     "node-fetch": "^1.7.1",
     "truffle-contract": "^2.0.4",

@@ -4,9 +4,6 @@ const config = require('./config');
 const rinkebyProvider = new HDWalletProvider(config.mnemonic, config.rinkeby.providerUrl);
 const mainProvider = new HDWalletProvider(config.mnemonic, config.main.providerUrl);
 
-console.log('Rinkeby Address', rinkebyProvider.address);
-console.log('Main Address', mainProvider.address);
-
 module.exports = {
   networks: {
     development: {
