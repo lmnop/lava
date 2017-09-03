@@ -17,62 +17,62 @@ if (process.env.NODE_ENV === 'local') {
   });
 }
 
-async function watch(lava, web3, owner) {
-  try {
-    const activateSIM = lava.LogActivateSIM();
-    const deactivateSIM = lava.LogDeactivateSIM();
+// async function watch(lava, web3, owner) {
+//   try {
+//     const activateSIM = lava.LogActivateSIM();
+//     const deactivateSIM = lava.LogDeactivateSIM();
 
-    activateSIM.watch(async (error, event) => {
-      try {
-        if (error) {
-          throw new Error(error);
-        }
+//     activateSIM.watch(async (error, event) => {
+//       try {
+//         if (error) {
+//           throw new Error(error);
+//         }
 
-        const user = event.args.user;
-        const hexSIM = event.args.sim;
+//         const user = event.args.user;
+//         const hexSIM = event.args.sim;
 
-        const iccid = web3.toAscii(hexSIM).replace(/\0/g, '');
+//         const iccid = web3.toAscii(hexSIM).replace(/\0/g, '');
 
-        const sim = await twilio.getSIMByIccid(iccid);
+//         const sim = await twilio.getSIMByIccid(iccid);
 
-        console.log(`Activating ${sim.iccid}`);
+//         console.log(`Activating ${sim.iccid}`);
 
-        await twilio.activateSIM(sim);
-        await lava.updateSIMStatus(hexSIM, {
-          from: owner,
-        });
-      } catch (err) {
-        console.log('ACTIVATE ERROR', err);
-      }
-    });
+//         await twilio.activateSIM(sim);
+//         await lava.updateSIMStatus(hexSIM, {
+//           from: owner,
+//         });
+//       } catch (err) {
+//         console.log('ACTIVATE ERROR', err);
+//       }
+//     });
 
-    deactivateSIM.watch(async (error, event) => {
-      try {
-        if (error) {
-          throw new Error(error);
-        }
+//     deactivateSIM.watch(async (error, event) => {
+//       try {
+//         if (error) {
+//           throw new Error(error);
+//         }
 
-        const user = event.args.user;
-        const hexSIM = event.args.sim;
+//         const user = event.args.user;
+//         const hexSIM = event.args.sim;
 
-        const iccid = web3.toAscii(hexSIM).replace(/\0/g, '');
+//         const iccid = web3.toAscii(hexSIM).replace(/\0/g, '');
 
-        const sim = await twilio.getSIMByIccid(iccid);
+//         const sim = await twilio.getSIMByIccid(iccid);
 
-        console.log(`Suspending ${sim.iccid}`);
+//         console.log(`Suspending ${sim.iccid}`);
 
-        await twilio.suspendedSIM(sim);
-        await lava.updateSIMStatus(hexSIM, {
-          from: owner,
-        });
-      } catch (err) {
-        console.log('DEACTIVATE ERROR', err);
-      }
-    });
-  } catch (err) {
-    console.log('WATCH ERROR', err);
-  }
-}
+//         await twilio.suspendedSIM(sim);
+//         await lava.updateSIMStatus(hexSIM, {
+//           from: owner,
+//         });
+//       } catch (err) {
+//         console.log('DEACTIVATE ERROR', err);
+//       }
+//     });
+//   } catch (err) {
+//     console.log('WATCH ERROR', err);
+//   }
+// }
 
 async function collectSIM(lava, web3, owner, sim) {
   try {
@@ -190,7 +190,7 @@ async function initiateContract() {
     const web3 = lava.constructor.web3;
     const owner = web3.currentProvider.provider.address;
 
-    watch(lava, web3, owner);
+    //watch(lava, web3, owner);
     collect(lava, web3, owner, 0);
     sync(lava, web3, owner, 0);
 
