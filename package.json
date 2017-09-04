@@ -9,9 +9,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node oracle/index.js",
-    "start-dapp": "cd dapp && yarn start",
-    "build-dapp": "cd dapp && yarn build",
-    "deploy-dapp": "cd dapp && yarn deploy",
+    "start-web": "cd web && yarn start",
+    "build-web": "cd web && yarn build",
+    "deploy-web": "cd web && yarn deploy",
     "compile": "truffle compile",
     "deploy-dev": "truffle migrate --network development --reset",
     "deploy-rinkeby": "truffle migrate --network rinkeby --reset",
