@@ -199,7 +199,7 @@ async function initiateContract() {
     }, 1000 * 60 * 10); // Every 10 minutes
 
     setInterval(() => {
-      collect(lava, web3, owner, 0);
+      sync(lava, web3, owner, 0);
     }, 1000 * 60 * 1); // Every minute
   } catch (err) {
     console.log('INITIATE ERROR', err);
