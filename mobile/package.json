@@ -1,0 +1,49 @@
+{
+  "name": "lava",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "ios": "react-native run-ios",
+    "android": "react-native run-android",
+    "test": "jest"
+  },
+  "dependencies": {
+    "assert": "^1.4.1",
+    "babel-plugin-rewrite-require": "^1.14.5",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^5.0.7",
+    "constants-browserify": "^1.0.0",
+    "domain-browser": "^1.1.7",
+    "https-browserify": "^1.0.0",
+    "node-libs-browser": "^2.0.0",
+    "node-libs-react-native": "https://github.com/parshap/node-libs-react-native.git",
+    "node-process": "^1.0.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^0.0.0",
+    "querystring-es3": "^0.2.1",
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.48.2",
+    "react-native-bip39": "^2.3.0",
+    "react-native-crypto": "^2.0.3",
+    "react-native-pbkdf2-shim": "git+https://git@github.com/wswoodruff/react-native-pbkdf2-shim.git",
+    "react-native-randombytes": "^3.0.0",
+    "readable-stream": "^2.3.3",
+    "stream-browserify": "^2.0.1",
+    "stream-http": "^2.7.2",
+    "timers-browserify": "^2.0.4",
+    "truffle-contract": "^2.0.5",
+    "truffle-hdwallet-provider": "^0.0.3",
+    "tty-browserify": "^0.0.0",
+    "util": "^0.10.3",
+    "vm-browserify": "^0.0.4"
+  },
+  "devDependencies": {
+    "babel-jest": "21.0.2",
+    "babel-preset-react-native": "3.0.2",
+    "jest": "21.0.2",
+    "react-test-renderer": "16.0.0-alpha.12"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
