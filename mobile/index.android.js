@@ -2,6 +2,6 @@ import {
   AppRegistry,
 } from 'react-native';
 
-import app from './app';
+import App from './src/App';
 
-AppRegistry.registerComponent('lava', () => app);
+AppRegistry.registerComponent('lava', () => App);
