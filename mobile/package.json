@@ -24,7 +24,7 @@
     "path-browserify": "^0.0.0",
     "querystring-es3": "^0.2.1",
     "react": "16.0.0-alpha.12",
-    "react-native": "0.48.2",
+    "react-native": "0.48.3",
     "react-native-bip39": "^2.3.0",
     "react-native-crypto": "^2.0.3",
     "react-native-pbkdf2-shim": "git+https://git@github.com/wswoodruff/react-native-pbkdf2-shim.git",
