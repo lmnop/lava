@@ -162,7 +162,7 @@ export const refresh = () => async (dispatch, getState) => {
 
     const addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -222,7 +222,7 @@ export const getLavaContract = () => async (dispatch, getState) => {
 
     const addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -288,7 +288,7 @@ export const registerSIM = (iccid) => async (dispatch, getState) => {
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -326,11 +326,12 @@ export const purchaseData = (data) => async (dispatch, getState) => {
     const { web3, lava } = await getEthereum(state.user.mnemonic);
 
     const puchasedInEther = parseFloat(state.contract.parameters.etherPerGBEther.value) * parseFloat(data);
+
     const purchasedInWei = web3.toWei(puchasedInEther, 'ether');
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -338,7 +339,7 @@ export const purchaseData = (data) => async (dispatch, getState) => {
       from: state.user.address,
     });
 
-    if (addressBalance < (purchasedInWei + gasEstimate)) {
+    if (addressBalance < (parseInt(purchasedInWei, 10) + gasEstimate)) {
       throw new Error('insufficient balance');
     }
 
@@ -376,7 +377,7 @@ export const sellData = (data) => async (dispatch, getState) => {
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -384,7 +385,7 @@ export const sellData = (data) => async (dispatch, getState) => {
       throw new Error('insufficient balance');
     }
 
-    if (state.contract.balance.toNumber() < sellingInWei) {
+    if (state.contract.balance.toNumber() < parseInt(sellingInWei, 10)) {
       throw new Error('insufficient contract balance');
     }
 
@@ -423,7 +424,7 @@ export const deposit = (amount) => async (dispatch, getState) => {
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -463,7 +464,7 @@ export const withdraw = (amount) => async (dispatch, getState) => {
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
@@ -471,7 +472,7 @@ export const withdraw = (amount) => async (dispatch, getState) => {
       throw new Error('insufficient balance');
     }
 
-    if (state.user.contract.balance < withdrawInWei) {
+    if (state.user.contract.balance < parseInt(withdrawInWei, 10)) {
       throw new Error('insufficient contract balance');
     }
 
@@ -500,7 +501,7 @@ export const flipSIMStatus = (sim) => async (dispatch, getState) => {
 
     let addressBalance = await new Promise((resolve, reject) => {
       web3.eth.getBalance(state.user.address, (error, value) => {
-        return resolve(value);
+        return resolve(value.toNumber());
       });
     });
 
