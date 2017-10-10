@@ -3798,9 +3798,9 @@ node-libs-browser@^2.0.0:
     util "^0.10.3"
     vm-browserify "0.0.4"
 
-"node-libs-react-native@https://github.com/parshap/node-libs-react-native.git":
+"node-libs-react-native@git+https://git@github.com/parshap/node-libs-react-native.git":
   version "1.0.1"
-  resolved "https://github.com/parshap/node-libs-react-native.git#5d4806bc228c08603751344c3b3f911c891d5c14"
+  resolved "git+https://git@github.com/parshap/node-libs-react-native.git#5d4806bc228c08603751344c3b3f911c891d5c14"
   dependencies:
     assert "^1.4.1"
     browserify-zlib "^0.1.4"
